@@ -5,6 +5,8 @@ backend:
   base_url: https://your-site.vercel.app
   auth_endpoint: /api/auth
 
+local_backend: true
+
 publish_mode: editorial_workflow
 media_folder: public/images
 public_folder: /images
@@ -39,6 +41,11 @@ collections:
         widget: select
         options: ["beginner", "intermediate", "advanced"]
         default: "intermediate"
+      - name: section
+        label: "Research Section"
+        widget: select
+        required: false
+        options: ["background", "methodology", "evaluation", "discussion", "related_work"]
       - { name: lastUpdated, label: "Last Updated", widget: datetime }
       - { name: updatedBy, label: "Updated By", widget: string }
       - name: relatedConcepts
