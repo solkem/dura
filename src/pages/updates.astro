@@ -3,6 +3,8 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { ProjectBadge } from '../components';
 
+export const prerender = true;
+
 const updates = await getCollection('updates');
 const sortedUpdates = updates.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 ---

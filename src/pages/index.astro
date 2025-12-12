@@ -3,6 +3,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 import { ProjectBadge } from '../components';
 
+export const prerender = true;
+
 const concepts = await getCollection('concepts');
 ---
 
