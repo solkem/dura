@@ -1,0 +1,31 @@
+---
+title: "Msingi"
+tagline: "Anonymous IoT device identity and autonomous wallets"
+status: "research"
+repo: "https://github.com/your-org/msingi"
+team:
+  - name: "Solomon Kembo"
+    role: "Lead Author"
+lastUpdated: 2024-12-11
+updatedBy: "solomon"
+---
+
+import { ConceptLink, CrossProjectLink } from '../../components';
+
+## Core Thesis
+
+> **Anonymity requires device-held keys, and ZK-enforced spending policies make device wallets safe.**
+
+This is not a design preference—it's a logical requirement. If a human wallet pays for a device's transaction, the payment links device to human identity, destroying all privacy guarantees.
+
+## Three Pillars
+
+1. **BRACE**: Blind Registration
+2. **IAR**: Incentivized Anonymous Relay
+3. **ACR**: Anonymous Contribution Rewards
+
+## Integration with EdgeChain
+
+EdgeChain protects farmer identity while <CrossProjectLink project="msingi" concept="brace">Msingi's BRACE protocol</CrossProjectLink> protects the IoT sensors collecting field data. Together, they form a complete privacy stack.
+
+Msingi sensors submit anonymous attestations. These can be consumed by <CrossProjectLink project="edgechain" concept="dual-merkle-roots">EdgeChain's Dual Merkle Root system</CrossProjectLink> to verify IoT data separately from manual farmer reports.
