@@ -26,7 +26,7 @@ collections:
         label: Projects
         widget: select
         multiple: true
-        options: ["edgechain", "msingi"]
+        options: ["edgechain", "msingi", "ndani"]
       - name: category
         label: Category
         widget: select
@@ -64,6 +64,27 @@ collections:
     fields:
       - { name: title, label: Title, widget: string }
       # Simplified view for specific filtering, but typically reuses same schema
+
+  - name: ndani-concepts
+    label: "Ndani Concepts"
+    folder: "src/content/concepts"
+    filter: { field: "projects", value: "ndani" }
+    create: true
+    extension: mdx
+    format: frontmatter
+    fields:
+      - { name: title, label: Title, widget: string }
+      # Simplified view for specific filtering, but typically reuses same schema
+
+  - name: msingi-concepts
+    label: "Msingi Concepts"
+    folder: "src/content/concepts"
+    filter: { field: "projects", value: "msingi" }
+    create: true
+    extension: mdx
+    format: frontmatter
+    fields:
+      - { name: title, label: Title, widget: string }
 
   - name: projects
     label: "Projects"
@@ -103,7 +124,7 @@ collections:
       - name: project
         label: Project
         widget: select
-        options: ["edgechain", "msingi", "platform", "all"]
+        options: ["edgechain", "msingi", "ndani", "platform", "all"]
       - name: type
         label: "Update Type"
         widget: select
