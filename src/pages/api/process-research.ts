@@ -1,6 +1,8 @@
 
 import type { APIRoute } from 'astro';
-import { Parser } from '@orcid/bibtex-parse-js';
+// @ts-ignore
+import bibtexParse from '@orcid/bibtex-parse-js';
+const Parser = bibtexParse.Parser;
 import fs from 'node:fs/promises';
 import path from 'node:path';
 

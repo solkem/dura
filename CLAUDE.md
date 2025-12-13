@@ -4,7 +4,7 @@
 
 **Name**: Midnight Learning Platform  
 **Purpose**: Interactive, real-time collaborative research documentation for Midnight-based projects  
-**Initial Projects**: EdgeChain, Msingi  
+**Initial Projects**: EdgeChain, Msingi, Ndani  
 **Lead**: Solomon Kembo  
 **Status**: Initial implementation
 
@@ -66,7 +66,7 @@ midnight-learning/
 │   ├── components/
 │   │   ├── ConceptCard.astro        # Static concept display
 │   │   ├── InteractiveFAQ.tsx       # Expandable FAQ (React)
-│   │   ├── ProjectBadge.tsx         # EdgeChain/Msingi badges
+│   │   ├── ProjectBadge.tsx         # EdgeChain/Msingi/Ndani badges
 │   │   ├── Analogy.tsx              # Styled analogy blocks
 │   │   ├── ProjectExample.tsx       # Project-specific examples
 │   │   ├── UpdateFeed.tsx           # Recent changes sidebar
@@ -95,7 +95,8 @@ midnight-learning/
 │   │   │
 │   │   ├── projects/                # Project overviews
 │   │   │   ├── edgechain.mdx
-│   │   │   └── msingi.mdx
+│   │   │   ├── msingi.mdx
+│   │   │   └── ndani.mdx
 │   │   │
 │   │   ├── glossary/                # Quick-reference definitions
 │   │   │   └── terms.yaml
@@ -127,7 +128,8 @@ midnight-learning/
 │   │   └── config.yml               # CMS field definitions
 │   ├── images/
 │   │   ├── edgechain-logo.svg
-│   │   └── msingi-logo.svg
+│   │   ├── msingi-logo.svg
+│   │   └── ndani-logo.svg
 │   └── favicon.svg
 │
 ├── astro.config.mjs
@@ -150,7 +152,7 @@ const concepts = defineCollection({
     title: z.string(),
     shortTitle: z.string().optional(),        // For nav/badges
     timestamp: z.string().optional(),          // Video timestamp
-    projects: z.array(z.enum(['edgechain', 'msingi'])).default([]),
+    projects: z.array(z.enum(['edgechain', 'msingi', 'ndani'])).default([]),
     category: z.enum([
       'cryptography',
       'economics',
@@ -191,7 +193,7 @@ const updates = defineCollection({
     title: z.string(),
     date: z.coerce.date(),
     author: z.string(),
-    project: z.enum(['edgechain', 'msingi', 'platform', 'all']),
+    project: z.enum(['edgechain', 'msingi', 'ndani', 'platform', 'all']),
     type: z.enum(['research', 'implementation', 'documentation', 'review'])
   })
 });
@@ -328,7 +330,7 @@ collections:
         label: Projects
         widget: select
         multiple: true
-        options: ["edgechain", "msingi"]
+        options: ["edgechain", "msingi", "ndani"]
       - name: category
         label: Category
         widget: select
@@ -389,7 +391,7 @@ collections:
       - name: project
         label: Project
         widget: select
-        options: ["edgechain", "msingi", "platform", "all"]
+        options: ["edgechain", "msingi", "ndani", "platform", "all"]
       - name: type
         label: "Update Type"
         widget: select
@@ -426,17 +428,18 @@ The main interactive component (already built). Features:
 ### ProjectBadge.tsx
 
 ```tsx
-type Project = 'edgechain' | 'msingi';
+type Project = 'edgechain' | 'msingi' | 'ndani';
 
 const colors: Record<Project, string> = {
   edgechain: 'bg-emerald-600 text-emerald-100',
-  msingi: 'bg-amber-600 text-amber-100'
+  msingi: 'bg-amber-600 text-amber-100',
+  ndani: 'bg-cyan-600 text-cyan-100'
 };
 
 export function ProjectBadge({ project }: { project: Project }) {
   return (
     <span className={`px-2 py-0.5 rounded text-xs font-medium ${colors[project]}`}>
-      {project === 'edgechain' ? 'EdgeChain' : 'Msingi'}
+      {project === 'edgechain' ? 'EdgeChain' : project === 'msingi' ? 'Msingi' : 'Ndani'}
     </span>
   );
 }
@@ -460,11 +463,12 @@ export function Analogy({ children }: { children: React.ReactNode }) {
 ### ProjectExample.tsx
 
 ```tsx
-type Project = 'edgechain' | 'msingi';
+type Project = 'edgechain' | 'msingi' | 'ndani';
 
 const styles: Record<Project, string> = {
   edgechain: 'bg-emerald-900/40 border-emerald-500/40 text-emerald-200',
-  msingi: 'bg-amber-900/40 border-amber-500/40 text-amber-200'
+  msingi: 'bg-amber-900/40 border-amber-500/40 text-amber-200',
+  ndani: 'bg-cyan-900/40 border-cyan-500/40 text-cyan-200'
 };
 
 export function ProjectExample({ 
@@ -600,7 +604,7 @@ npm run preview
 1. Create `src/content/concepts/new-concept.mdx`
 2. Add frontmatter with required fields
 3. Write explanation, analogy, examples
-4. Add `<ProjectExample>` blocks for EdgeChain/Msingi
+4. Add `<ProjectExample>` blocks for EdgeChain/Msingi/Ndani
 5. Update `relatedConcepts` in relevant existing files
 
 ### Adding Research Updates
@@ -634,7 +638,7 @@ type Result<T, E = Error> =
 
 - Tailwind utilities in components
 - Custom CSS only in `global.css`
-- Project colors: emerald (EdgeChain), amber (Msingi), purple (Midnight general)
+- Project colors: emerald (EdgeChain), amber (Msingi), cyan (Ndani), purple (Midnight general)
 
 ### Content
 
@@ -685,7 +689,7 @@ When working on this platform:
 2. **How do I add a concept?** → Create MDX with frontmatter, add ProjectExamples
 3. **How do non-devs edit?** → `/admin` Decap CMS web interface
 4. **How does deployment work?** → Push to main → Vercel auto-deploys
-5. **What's the project color scheme?** → Emerald (EdgeChain), Amber (Msingi), Purple (Midnight)
+5. **What's the project color scheme?** → Emerald (EdgeChain), Amber (Msingi), Cyan (Ndani), Purple (Midnight)
 
 ---
 

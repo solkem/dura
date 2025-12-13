@@ -1,0 +1,62 @@
+---
+title: "Ndani"
+tagline: "Trustless Privacy-Preserving Infrastructure for Machine Economies"
+status: "research"
+team:
+  - name: "Solomon Kembo"
+    role: "Project Lead"
+lastUpdated: 2024-12-11
+updatedBy: "solomon"
+---
+
+import { ConceptLink, ArchitectureDiagram, HardwareStack } from '../../components';
+
+## Problem
+
+Existing IoT-blockchain systems (IOTA, Helium) allow devices to earn, but payments flow to human-controlled wallets. The device remains an instrument, not an economic agent.
+
+Furthermore, privacy solutions often rely on a trusted gateway to generate proofs. If the gateway is compromised or compelled, privacy is lost.
+
+## Solution
+
+**Ndani** (Swahili for "Inside") moves the entire trust boundary *inside* the farmer's control.
+
+1.  **Device-Held Wallets**: Keys live in the ATECC608A secure element.
+2.  **Local Proof Server**: Farmer-owned Raspberry Pi 5 generates ZK proofs locally.
+
+## Core Concepts Used
+
+| Concept | Application |
+|---------|-------------|
+| <ConceptLink slug="brace" /> | Anonymous device registration |
+| <ConceptLink slug="zkp" /> | Proof of policy compliance |
+| <ConceptLink slug="device-wallet" /> | Autonomous economic agency |
+| <ConceptLink slug="trustless-architecture" /> | No-gateway proof generation |
+
+## Architecture
+
+```
+[Sensor Node] <--- LoRa ---> [Local Pi 5 Proof Server] <--- Internet ---> [Midnight Network]
+    |                              |                                           |
+(Generates Data)             (Generates Proof)                           (Verifies Proof)
+```
+
+## Hardware Stack
+
+<HardwareStack 
+  title="Trustless Node (~$163.50)"
+  components={[
+    { name: "ESP32-S3", function: "Sensor Microcontroller", cost: "$8.00" },
+    { name: "ATECC608A", function: "Identity + Wallet Keys", cost: "$2.50" },
+    { name: "SX1276", function: "LoRa Transceiver", cost: "$6.00" },
+    { name: "Sensors/Power", function: "Env + Solar", cost: "$22.00" },
+    { name: "Raspberry Pi 5", function: "Local Proof Server", cost: "$80.00" },
+    { name: "Pi Infra", function: "Power + Case + SD", cost: "$35.00" }
+  ]}
+/>
+
+## Constraints
+
+- **Cost**: Higher per-node cost (~$160 vs ~$50) justified by trustlessness.
+- **Complexity**: Requires managing local server infrastructure.
+- **Connectivity**: Pi 5 requires internet backhaul.

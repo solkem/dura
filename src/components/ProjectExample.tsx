@@ -1,11 +1,12 @@
 import React from 'react';
 import { ProjectBadge } from './ProjectBadge';
 
-type Project = 'edgechain' | 'msingi';
+type Project = 'edgechain' | 'msingi' | 'ndani';
 
 const styles: Record<Project, string> = {
     edgechain: 'bg-emerald-900/40 border-emerald-500/40 text-emerald-200',
-    msingi: 'bg-amber-900/40 border-amber-500/40 text-amber-200'
+    msingi: 'bg-amber-900/40 border-amber-500/40 text-amber-200',
+    ndani: 'bg-cyan-900/40 border-cyan-500/40 text-cyan-200'
 };
 
 export function ProjectExample({

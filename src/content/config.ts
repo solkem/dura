@@ -6,7 +6,7 @@ const concepts = defineCollection({
         title: z.string(),
         shortTitle: z.string().optional(),
         timestamp: z.string().optional(),
-        projects: z.array(z.enum(['edgechain', 'msingi'])).default([]),
+        projects: z.array(z.enum(['edgechain', 'msingi', 'ndani'])).default([]),
         category: z.enum([
             'cryptography',
             'economics',
@@ -48,7 +48,7 @@ const updates = defineCollection({
         title: z.string(),
         date: z.coerce.date(),
         author: z.string(),
-        project: z.enum(['edgechain', 'msingi', 'platform', 'all']),
+        project: z.enum(['edgechain', 'msingi', 'ndani', 'platform', 'all']),
         type: z.enum(['research', 'implementation', 'documentation', 'review'])
     })
 });
