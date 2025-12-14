@@ -1,0 +1,48 @@
+---
+title: "Trustless Architecture (2-of-2 Multisig)"
+shortTitle: "Trustless Architecture"
+category: "cryptography"
+difficulty: "intermediate"
+projects: ["ndani", "msingi"]
+relatedConcepts: ["zkp"]
+evolvedFrom: ["mpc", "multisig"]
+dependsOn: ["secure-enclave"]
+lastUpdated: 2024-10-27
+updatedBy: "Solomon Kembo"
+---
+
+import KeyExchangeSimulator from '../../components/simulations/KeyExchangeSimulator';
+
+The core innovation of **Ndani** is the elimination of trusted intermediaries in the data supply chain. We achieve this through a "Trustless Architecture" where no single party holds the full private key required to sign transactions or decrypt data.
+
+## The Problem: Administrative Keys
+
+In traditional IoT (and even most DePIN) networks, the device manufacturer or a central server holds the private keys. This means they can:
+1.  Sign data on your behalf.
+2.  Censor your transactions.
+3.  Change the rules of the network arbitrarily.
+
+This is **Administrative Access**, and it is the antithesis of sovereignty.
+
+## The Solution: Keysplitting
+
+We utilize a 2-of-2 Multi-Signature (or MPC) scheme. 
+*   **Share A** is generated inside the secure hardware element of the device (Msingi Unit). It never leaves the chip.
+*   **Share B** is held by the Farmer (the owner) in their wallet.
+
+To perform any action—like claiming rewards or updating firmware—BOTH shares must participate. The protocol coordinates a signature without ever reconstructing the full key in one place.
+
+## Interactive Simulation
+
+Use the simulator below to understand how the **Device** and **Farmer** cooperate to sign a transaction without trusting each other.
+
+<KeyExchangeSimulator client:visible />
+
+## Technical Details
+
+The specific curve used is **BLS12-381**, allowing for signature aggregation. This enables us to scale to millions of devices without bloating the blockchain state.
+
+### Threat Model
+*   **If the Server is hacked**: The attacker only has public keys. They cannot spoof device data.
+*   **If the Device is stolen**: The physical attacker only has Share A. They strictly need the Farmer's Share B to move funds.
+*   **If the Farmer loses their key**: A social recovery protocol (timelocked) can rotate Share B, provided the Device is still online and consents.

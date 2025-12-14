@@ -2,9 +2,12 @@
 import type { APIRoute } from 'astro';
 // @ts-ignore
 import bibtexParse from '@orcid/bibtex-parse-js';
-const Parser = bibtexParse.Parser;
-import fs from 'node:fs/promises';
-import path from 'node:path';
+const Parser = bibtexParse?.Parser || bibtexParse;
+import * as fs from 'node:fs/promises';
+import * as path from 'node:path';
+
+// Force Dev-only mode to prevent build errors
+export const prerender = false;
 
 // Heuristic for extracting concepts from text
 function extractConcepts(text: string): string[] {
@@ -81,6 +84,14 @@ ${concepts.map(c => `- ${c}`).join('\n')}
 }
 
 export const POST: APIRoute = async ({ request }) => {
+    // Security: Only allow in development mode
+    if (!import.meta.env.DEV) {
+        return new Response(JSON.stringify({
+            success: false,
+            error: "This tool is only available in development mode."
+        }), { status: 403 });
+    }
+
     try {
         const { bibtex, project, section } = await request.json();
         const entries = Parser(bibtex);

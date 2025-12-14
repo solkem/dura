@@ -6,3 +6,5 @@ export * from './EdgeChainComponents';
 export * from './MsingiComponents';
 export * from './InteractiveFAQ';
 export * from './ArchitectureDiagram';
+export * from './TraceabilityMatrix';
+export * from './simulations';

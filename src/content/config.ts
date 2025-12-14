@@ -19,6 +19,10 @@ const concepts = defineCollection({
         lastUpdated: z.coerce.date(),
         updatedBy: z.string(),
         relatedConcepts: z.array(z.string()).default([]),
+        // Traceability Fields
+        conflictsWith: z.array(z.string()).default([]),
+        evolvedFrom: z.array(z.string()).default([]),
+        dependsOn: z.array(z.string()).default([]),
         externalLinks: z.array(z.object({
             label: z.string(),
             url: z.string().url()
