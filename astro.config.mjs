@@ -10,7 +10,8 @@ export default defineConfig({
   integrations: [react(), mdx()],
   output: 'hybrid',
   adapter: vercel({
-    webAnalytics: { enabled: true }
+    webAnalytics: { enabled: true },
+    maxDuration: 10
   }),
   vite: {
     plugins: [tailwindcss()]
