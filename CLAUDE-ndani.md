@@ -3,8 +3,11 @@
 ## Project Identity
 
 **Name**: Ndani (Swahili: "Inside")
+
 **Purpose**: Trustless Privacy-Preserving Infrastructure for Machine Economies
+
 **Parent**: Midnight Learning Platform
+
 **Lead**: Solomon Kembo
 **Focus**: Autonomous device wallets, trustless proof generation, and machine-to-machine economy
 **Core Insight**: Trustlessness — devices hold their own keys and generate proofs locally (via farmer-owned infrastructure), eliminating gateway trust.
