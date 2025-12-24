@@ -221,7 +221,7 @@ npm run preview
 
 ### For Researchers (Non-Technical)
 
-1. Navigate to `https://your-site.vercel.app/admin`
+1. Navigate to `https://edgechain-msingi-ndani.fly.dev/admin`
 2. Login with GitHub credentials
 3. Choose content type: Concept, Project, or Research Update
 4. Fill in web form (title, category, examples, etc.)
@@ -338,17 +338,20 @@ BRACE protocol implementation details...
 
 ## 🔐 Deployment
 
-### Vercel Setup
+### Fly.io Deployment
 
-1. **Import repository** to Vercel
-2. **Set environment variables**:
-   ```
-   OAUTH_GITHUB_CLIENT_ID=your_github_oauth_client_id
-   OAUTH_GITHUB_CLIENT_SECRET=your_github_oauth_client_secret
-   ```
-3. **Configure GitHub OAuth app**:
-   - Authorization callback URL: `https://your-site.vercel.app/api/auth/callback`
-4. **Deploy**: Auto-deploys on push to `main` branch
+**Live Site**: https://edgechain-msingi-ndani.fly.dev/
+
+The application is deployed on Fly.io with auto-deploy configured on push to `main` branch.
+
+**Environment Variables** (if using Decap CMS):
+```
+OAUTH_GITHUB_CLIENT_ID=your_github_oauth_client_id
+OAUTH_GITHUB_CLIENT_SECRET=your_github_oauth_client_secret
+```
+
+**GitHub OAuth Configuration**:
+- Authorization callback URL: `https://edgechain-msingi-ndani.fly.dev/api/auth/callback`
 
 ### Deployment Checklist
 
@@ -497,7 +500,7 @@ Special thanks to the farmers, researchers, and developers who contributed their
 
 ## Quick Links
 
-- [Live Site](https://your-site.vercel.app)
-- [CMS Admin](https://your-site.vercel.app/admin)
-- [Issue Tracker](https://github.com/your-org/midnight-learning/issues)
-- [Discussions](https://github.com/your-org/midnight-learning/discussions)
+- [Live Site](https://edgechain-msingi-ndani.fly.dev/)
+- [CMS Admin](https://edgechain-msingi-ndani.fly.dev/admin)
+- [Issue Tracker](https://github.com/solkem/edgechain-msingi-ndani/issues)
+- [Discussions](https://github.com/solkem/edgechain-msingi-ndani/discussions)

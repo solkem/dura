@@ -27,10 +27,11 @@
 
 **Name**: Midnight Learning Platform
 **Repository**: `edgechain-msingi-ndani`
+**Live Site**: https://edgechain-msingi-ndani.fly.dev/
 **Purpose**: Interactive, real-time collaborative research documentation for privacy-preserving blockchain projects
 **Primary Projects**: EdgeChain, Msingi, Ndani
 **Lead**: Solomon Kembo
-**Current Status**: Active Development (v0.0.1)
+**Current Status**: Active Development (v0.0.1) - Deployed on Fly.io
 **Node Version**: >=20.0.0
 **Last Updated**: December 2024
 
@@ -125,7 +126,7 @@ Each concept (e.g., ZKPs, BRACE, Trustless Architecture) includes:
 | **Components** | React | 18.3.1 | Interactive UI | FAQ accordions, simulators, diagrams |
 | **Styling** | Tailwind CSS | 4.0.0 | Utility-first CSS | Rapid prototyping, design system tokens |
 | **Build Tool** | Vite | 5.4.0 | Dev server, bundling | Fast HMR, ESM-native |
-| **Hosting** | Vercel | 7.8.2 | Deployment | Auto-deploy, PR previews, edge functions |
+| **Hosting** | Fly.io | N/A | Deployment | Auto-deploy on push to main, live at fly.dev |
 | **CMS** | Decap CMS | (CDN) | Web editor | Git-backed, free, no vendor lock-in |
 | **Auth** | GitHub OAuth | (planned) | CMS access | Leverages existing GitHub accounts |
 
@@ -654,21 +655,25 @@ theme: {
 
 ## Deployment & Operations
 
-### Vercel Deployment
+### Fly.io Deployment
 
-**Current Status**: TODO (not yet deployed)
+**Production URL**: https://edgechain-msingi-ndani.fly.dev/
 
-**Setup Steps**:
+**Status**: ✅ DEPLOYED (Auto-deploys on push to `main` branch)
 
-1. Import repository to Vercel
-2. Set environment variables:
-   ```
-   OAUTH_GITHUB_CLIENT_ID=your_client_id
-   OAUTH_GITHUB_CLIENT_SECRET=your_client_secret
-   ```
-3. Configure GitHub OAuth app:
-   - Authorization callback URL: `https://your-site.vercel.app/api/auth/callback`
-4. Deploy: Auto-deploys on push to `main` branch
+**Platform**: Fly.io
+- The application uses Astro with the Vercel adapter configured for serverless/hybrid mode
+- Despite the Vercel adapter, the actual deployment platform is Fly.io
+- Auto-deploy configured via Fly.io's GitHub integration
+
+**Environment Variables** (if using Decap CMS):
+```
+OAUTH_GITHUB_CLIENT_ID=your_client_id
+OAUTH_GITHUB_CLIENT_SECRET=your_client_secret
+```
+
+**GitHub OAuth Configuration**:
+- Authorization callback URL: `https://edgechain-msingi-ndani.fly.dev/api/auth/callback`
 
 ### Deployment Checklist
 
@@ -924,7 +929,7 @@ theme: {
 
 ### Q3: How do non-technical users edit content?
 
-**A**: Via Decap CMS web interface at `/admin` (TODO: needs setup). Researchers login with GitHub, edit via web forms, and save creates a PR automatically.
+**A**: Via Decap CMS web interface at https://edgechain-msingi-ndani.fly.dev/admin (TODO: needs CMS configuration). Researchers login with GitHub, edit via web forms, and save creates a PR automatically.
 
 ### Q4: What's the project color scheme?
 
@@ -936,7 +941,7 @@ theme: {
 
 ### Q5: How does deployment work?
 
-**A**: Push to `main` branch → Vercel auto-deploys (TODO: needs setup). PR previews are automatically generated.
+**A**: Push to `main` branch → Fly.io auto-deploys to https://edgechain-msingi-ndani.fly.dev/. The deployment is already configured and live.
 
 ### Q6: What components are available?
 
@@ -1041,7 +1046,7 @@ When an AI assistant or contributor is working on this platform, this file shoul
 6. ✅ **What's the color scheme?** → Emerald (EdgeChain), Amber (Msingi), Cyan (Ndani)
 7. ✅ **How do I cite papers?** → Use `externalLinks` in frontmatter or BibTeX importer
 8. ✅ **What's the difference between projects?** → See Project-Specific Contexts
-9. ✅ **How do I deploy?** → Push to main → Vercel auto-deploys (TODO: setup)
+9. ✅ **How do I deploy?** → Push to main → Fly.io auto-deploys to https://edgechain-msingi-ndani.fly.dev/
 10. ✅ **What's the roadmap?** → See Roadmap & Future Work section
 
 ---
