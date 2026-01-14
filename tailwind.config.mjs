@@ -4,25 +4,27 @@ export default {
     theme: {
         extend: {
             colors: {
-                brand: {
-                    50: '#f5f3ff', // Very light purple bg
-                    100: '#ede9fe',
-                    200: '#ddd6fe',
-                    300: '#c4b5fd',
-                    400: '#a78bfa',
-                    500: '#8b5cf6', // Primary purple
-                    600: '#7c3aed',
-                    700: '#6d28d9',
-                    800: '#5b21b6', // Deep purple text
-                    900: '#4c1d95',
-                    950: '#2e1065',
+                // Dura Primary Theme (Warm Amber/Stone - Knowledge Granary)
+                dura: {
+                    50: '#fefdfb',
+                    100: '#fdfaf5',
+                    200: '#faf0e4',
+                    300: '#f5e1c8',
+                    400: '#f59e0b',   // amber-500 accent
+                    500: '#b45309',   // amber-600 primary
+                    600: '#92400e',   // amber-700 dark
+                    700: '#78350f',
+                    800: '#451a03',
+                    900: '#1c1917',   // stone-900 background
+                    950: '#0c0a09',   // stone-950 deep
                 },
-                midnight: { // Kept for legacy ref but redefined to be dark accents
-                    900: '#0a0a1a',
-                    800: '#12122a',
-                    700: '#1a1a3a',
-                    950: '#05050f'
-                },
+                // Content type colors
+                concept: '#0ea5e9',       // sky-500
+                protocol: '#8b5cf6',      // violet-500
+                implementation: '#10b981', // emerald-500
+                'case-study': '#f97316',  // orange-500
+                research: '#ec4899',      // pink-500
+                // Project colors (existing - kept for continuity)
                 edgechain: {
                     50: '#ecfdf5',
                     100: '#d1fae5',
@@ -49,7 +51,7 @@ export default {
                     900: '#78350f',
                     950: '#451a03'
                 },
-                cyan: {
+                ndani: {
                     50: '#ecfeff',
                     100: '#cffafe',
                     200: '#a5f3fc',

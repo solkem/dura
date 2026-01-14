@@ -1,5 +1,5 @@
 ---
-const { title = "Midnight Learning" } = Astro.props;
+const { title = "Dura — The Knowledge Granary" } = Astro.props;
 import "../styles/global.css";
 ---
 
@@ -7,13 +7,18 @@ import "../styles/global.css";
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Dura — The Knowledge Granary. Industry-grade research platform for privacy-preserving systems in the baeIoT ecosystem."
+    />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title}</title>
   </head>
   <body
-    class="bg-white text-slate-900 font-medium min-h-screen flex flex-col selection:bg-brand-200 selection:text-brand-900"
+    class="bg-white text-slate-900 font-medium min-h-screen flex flex-col selection:bg-amber-200 selection:text-amber-900"
   >
     <div
-      class="fixed inset-x-0 top-0 h-96 bg-gradient-to-b from-brand-50 to-transparent -z-10 pointer-events-none"
+      class="fixed inset-x-0 top-0 h-96 bg-gradient-to-b from-amber-50 to-transparent -z-10 pointer-events-none"
     >
     </div>
 
@@ -25,40 +30,41 @@ import "../styles/global.css";
       >
         <a
           href="/"
-          class="text-xl font-bold tracking-tight text-brand-900 flex items-center gap-2"
+          class="text-xl font-bold tracking-tight text-amber-800 flex items-center gap-2"
         >
-          <span>Midnight Learning</span>
+          <span class="text-2xl">🌾</span>
+          <span>Dura</span>
         </a>
         <div class="flex gap-8 text-sm font-medium">
           <a
             href="/concepts"
-            class="text-slate-600 hover:text-brand-600 transition-colors"
-            >Concepts</a
+            class="text-slate-600 hover:text-amber-600 transition-colors"
+            >Learn</a
           >
           <a
             href="/projects/edgechain"
-            class="text-slate-600 hover:text-brand-600 transition-colors"
+            class="text-slate-600 hover:text-amber-600 transition-colors"
             >EdgeChain</a
           >
           <a
             href="/projects/msingi"
-            class="text-slate-600 hover:text-brand-600 transition-colors"
+            class="text-slate-600 hover:text-amber-600 transition-colors"
             >Msingi</a
           >
           <a
             href="/projects/ndani"
-            class="text-slate-600 hover:text-brand-600 transition-colors"
+            class="text-slate-600 hover:text-amber-600 transition-colors"
             >Ndani</a
           >
           <a
             href="/updates"
-            class="text-slate-600 hover:text-brand-600 transition-colors"
+            class="text-slate-600 hover:text-amber-600 transition-colors"
             >Updates</a
           >
         </div>
         <a
           href="/faq"
-          class="px-4 py-2 bg-brand-600 text-white rounded-full text-sm font-medium hover:bg-brand-700 transition-colors shadow-sm shadow-brand-200"
+          class="px-4 py-2 bg-amber-600 text-white rounded-full text-sm font-medium hover:bg-amber-700 transition-colors shadow-sm"
         >
           Explore FAQ
         </a>
@@ -72,9 +78,12 @@ import "../styles/global.css";
     <footer
       class="border-t border-slate-100 py-12 text-center text-slate-500 text-sm bg-slate-50"
     >
-      <p>© {new Date().getFullYear()} Midnight Learning.</p>
+      <p>© {new Date().getFullYear()} Dura — The Knowledge Granary</p>
       <p class="mt-2 text-xs text-slate-400">
-        Research-driven documentation for privacy-preserving systems.
+        Part of the <a
+          href="https://disruptiveiot.org"
+          class="underline hover:text-amber-600">baeIoT ecosystem</a
+        >. Research-driven documentation for privacy-preserving systems.
       </p>
     </footer>
   </body>

@@ -8,17 +8,16 @@ export const prerender = true;
 const concepts = await getCollection("concepts");
 ---
 
-<BaseLayout title="Midnight Learning Hub">
+<BaseLayout title="Dura — The Knowledge Granary">
   <div class="text-center mb-20 pt-8">
-    <h1 class="text-6xl font-extrabold text-brand-950 mb-6 tracking-tight">
-      Make research <span class="italic text-brand-600 font-serif"
-        >engaging</span
-      > with<br />
-      real-time documentation.
+    <h1 class="text-6xl font-extrabold text-stone-900 mb-6 tracking-tight">
+      The <span class="italic text-amber-600 font-serif">Knowledge</span> Granary<br
+      />
+      for privacy research.
     </h1>
     <p class="text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
-      Interactive research documentation for EdgeChain (Human Privacy), Msingi
-      (Device Privacy), and Ndani (Trustless Infrastructure).
+      Industry-grade learning platform for zero-knowledge proofs, blockchain
+      privacy, and trustless IoT systems. Part of the baeIoT ecosystem.
     </p>
   </div>
 
@@ -148,7 +147,7 @@ const concepts = await getCollection("concepts");
   </div>
 
   <div class="text-center mb-12">
-    <h3 class="text-3xl font-bold text-brand-900">Core Concepts</h3>
+    <h3 class="text-3xl font-bold text-stone-800">Core Concepts</h3>
     <p class="text-slate-500 mt-2">
       Foundational knowledge for the Midnight ecosystem
     </p>
@@ -159,10 +158,10 @@ const concepts = await getCollection("concepts");
       concepts.map((concept) => (
         <a
           href={`/concepts/${concept.slug}`}
-          class="block p-6 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-md hover:border-brand-200 transition-all group"
+          class="block p-6 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-md hover:border-amber-200 transition-all group"
         >
           <div class="flex justify-between items-start mb-4">
-            <span class="text-xs font-bold text-brand-600 bg-brand-50 px-2 py-1 rounded uppercase tracking-wide">
+            <span class="text-xs font-bold text-amber-700 bg-amber-50 px-2 py-1 rounded uppercase tracking-wide">
               {concept.data.category}
             </span>
             <div class="flex gap-1 transform group-hover:scale-105 transition-transform">
@@ -171,7 +170,7 @@ const concepts = await getCollection("concepts");
               ))}
             </div>
           </div>
-          <h4 class="text-xl font-bold text-slate-800 mb-2 group-hover:text-brand-700 transition-colors">
+          <h4 class="text-xl font-bold text-slate-800 mb-2 group-hover:text-amber-700 transition-colors">
             {concept.data.title}
           </h4>
           <div class="flex items-center text-sm text-slate-400 mt-4">
