@@ -64,5 +64,5 @@
 - [x] Optimize `Dockerfile` (multi-stage, `--omit=dev` install)
 - [x] Create GitHub Actions workflow (`.github/workflows/deploy.yml`) for SSH deployment
 - [x] Create Deployment Guide (`deployment-guide.md`)
-- [ ] User: Configure Nginx & DNS (see Guide)
+- [x] User: Configure Nginx & DNS (see Guide)
 - [x] User: Add Secrets to GitHub (`DO_HOST`, `DO_USERNAME`, `DO_SSH_KEY`)
