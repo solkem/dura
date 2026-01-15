@@ -58,7 +58,11 @@
 - [ ] Progress tracking
 - [ ] Paper management
 
-### Deployment (Alternative Strategy)
-- [x] Create GitHub Actions workflow (`.github/workflows/deploy.yml`)
-- [x] Push workflow to GitHub
-- [ ] User: Add `FLY_API_TOKEN` to GitHub Secrets
+### Deployment (DigitalOcean Migration)
+- [x] Pivot strategy: Deploy to DigitalOcean Droplet (`dura.disruptiveiot.org`) to check memory/cost
+- [x] Optimize `package.json` (move devDeps, remove unused adapters)
+- [x] Optimize `Dockerfile` (multi-stage, `--omit=dev` install)
+- [x] Create GitHub Actions workflow (`.github/workflows/deploy.yml`) for SSH deployment
+- [x] Create Deployment Guide (`deployment-guide.md`)
+- [ ] User: Configure Nginx & DNS (see Guide)
+- [ ] User: Add Secrets to GitHub (`DO_HOST`, `DO_USERNAME`, `DO_SSH_KEY`)

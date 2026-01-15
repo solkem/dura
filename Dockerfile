@@ -6,7 +6,7 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
+# Install execution dependencies (including devDeps for build)
 RUN npm install --legacy-peer-deps
 
 # Copy source code
@@ -20,10 +20,14 @@ FROM node:20-alpine AS runner
 
 WORKDIR /app
 
+# Copy package files for production install
+COPY package*.json ./
+
+# Install ONLY production dependencies
+RUN npm install --omit=dev --legacy-peer-deps
+
 # Copy built assets from builder
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package.json ./
 
 # Expose port
 EXPOSE 4321
@@ -31,6 +35,7 @@ EXPOSE 4321
 # Set environment
 ENV HOST=0.0.0.0
 ENV PORT=4321
+ENV NODE_ENV=production
 
 # Start the server
 CMD ["node", "./dist/server/entry.mjs"]
