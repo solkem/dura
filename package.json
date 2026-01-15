@@ -13,6 +13,7 @@
     "node": ">=20.0.0"
   },
   "dependencies": {
+    "@astrojs/check": "^0.9.6",
     "@astrojs/mdx": "^3.1.9",
     "@astrojs/react": "^3.6.3",
     "@astrojs/vercel": "^7.8.2",
@@ -24,6 +25,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "tailwindcss": "^4.0.0",
+    "typescript": "^5.9.3",
     "vite": "^5.4.0"
   }
 }

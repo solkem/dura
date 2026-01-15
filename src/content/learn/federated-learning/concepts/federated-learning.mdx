@@ -1,0 +1,45 @@
+---
+title: "Federated Learning"
+shortTitle: "FL"
+type: "concept"
+domain: "federated-learning"
+tier: "free"
+difficulty: "intermediate"
+description: "A machine learning approach where AI models train on local data; only model updates leave the device, never raw data."
+tags: ["machine-learning", "privacy", "distributed"]
+prerequisites: []
+related: ["zkp", "data-minimization"]
+references: []
+projects: ["edgechain"]
+lastUpdated: 2024-12-11
+updatedBy: "solomon"
+externalLinks: []
+---
+
+import { Analogy, ProjectExample } from '../../../../components';
+
+A machine learning approach where AI models train on local data; only model updates (gradients) leave the device, never raw data.
+
+<Analogy>
+Instead of students sending their homework to a central teacher, each student learns locally and only shares "I improved by 5% on multiplication." The teacher aggregates improvements without seeing any homework.
+</Analogy>
+
+## Why It Matters for EdgeChain
+
+Traditional agricultural AI requires farmers to upload sensitive data:
+- Exact yields (pricing manipulation risk)
+- Field locations (land grabbing risk)
+- Planting schedules (political targeting risk)
+
+Federated learning inverts this: **the model comes to the data, not data to the model.**
+
+<ProjectExample project="edgechain">
+Pest detection model trains across 1000 farms. Each farm's phone runs local training on its crop images. Only gradient updates aggregate to improve the global model. No farm's images ever leave their device.
+</ProjectExample>
+
+## Integration with ZKPs
+
+EdgeChain adds a ZK layer: farmers can prove "my local model achieved 85% accuracy" without revealing:
+- What crops they grow
+- Where their farm is located
+- What pests they've encountered

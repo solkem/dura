@@ -1,0 +1,62 @@
+---
+title: "BRACE Protocol"
+shortTitle: "BRACE"
+type: "protocol"
+domain: "midnight"
+tier: "free"
+difficulty: "advanced"
+description: "Blind Registration via Anonymous Commitment Enrollment — devices register on-chain without revealing their identity."
+tags: ["protocol", "privacy", "registration", "zkp"]
+prerequisites: ["zkp"]
+related: ["did", "nullifier"]
+references: []
+projects: ["msingi"]
+lastUpdated: 2024-12-11
+updatedBy: "solomon"
+externalLinks: []
+---
+
+import { Analogy, ProjectExample, ProtocolDiagram } from '../../../../components';
+
+**B**lind **R**egistration via **A**nonymous **C**ommitment **E**nrollment — devices register on-chain without revealing their identity to infrastructure operators.
+
+<Analogy>
+You want to join a club but don't want anyone to know your name. You put your ID card in a locked box, take a photo of the locked box, and submit only the photo. Later, you can prove "I'm the person who submitted that box" without ever opening it.
+</Analogy>
+
+## Protocol Flow
+
+<ProtocolDiagram>
+1. Device generates keypair `(pk, sk)` inside ATECC608B secure element
+2. Device samples random blinding factor `r`
+3. Device computes commitment `C = H(pk || r)`
+4. Device transmits `C` to proof server (`pk` and `r` remain secret)
+5. Proof server adds `C` to Merkle tree, publishes new root
+</ProtocolDiagram>
+
+## Attestation Phase
+
+When the device later submits data:
+
+1. Device sends `(data, signature, pk, r, Merkle_path)` via mesh
+2. Proof server generates ZK proof:
+   - "I know `(pk, r, path)` such that `H(pk||r)` is in registered tree"
+   - "AND signature is valid under `pk`"
+3. Chain verifies proof, records nullifier
+4. **Neither chain nor proof server learns which device submitted**
+
+## Security Property
+
+The **hiding property** of hash function `H` ensures the proof server cannot link commitment `C` back to public key `pk`. Even if the proof server is compromised or coerced, it cannot identify devices.
+
+<ProjectExample project="msingi">
+A soil moisture sensor in Manicaland registers via BRACE. The government compels the telecom to reveal all device activity. They see commitment `C = 0x8a3f...` submitted data—but cannot determine which of 10,000 registered sensors it was.
+</ProjectExample>
+
+## Guarantees
+
+| Label | Guarantee |
+|-------|-----------|
+| PG1 | Device anonymity: identification probability ≤ 1/N + negl(λ) |
+| PG2 | Unlinkability: can't correlate submissions across epochs |
+| PG6 | Key secrecy: can't extract key even with physical device access |

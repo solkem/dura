@@ -1,0 +1,25 @@
+{
+    "title": "Kachina: Foundations of Private Smart Contracts",
+    "authors": [
+        {
+            "name": "Thomas Kerber"
+        },
+        {
+            "name": "Aggelos Kiayias"
+        },
+        {
+            "name": "Markulf Kohlweiss"
+        }
+    ],
+    "year": 2021,
+    "venue": "IEEE CSF 2021",
+    "bibtex": "@inproceedings{kerber_kachina_2021,\n  author = {Kerber, Thomas and Kiayias, Aggelos and Kohlweiss, Markulf},\n  title = {Kachina: Foundations of Private Smart Contracts},\n  booktitle = {IEEE 34th Computer Security Foundations Symposium (CSF)},\n  year = {2021}\n}",
+    "tags": [
+        "smart-contracts",
+        "privacy",
+        "blockchain",
+        "zkp"
+    ],
+    "domain": "midnight",
+    "abstract": "Smart contracts present a uniform approach for deploying distributed computation and have become a popular means to develop security critical applications. A major barrier to adoption for many applications is the public nature of existing systems, such as Ethereum. Several systems satisfying various definitions of privacy and requiring various trust assumptions have been proposed; however, none achieved the universality and uniformity that Ethereum achieved for non-private contracts: One unified method to construct most contracts."
+}

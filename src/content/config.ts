@@ -1,5 +1,58 @@
 import { defineCollection, z } from 'astro:content';
 
+// ============================================================================
+// NEW: Learn collection (domain-organized content for Dura)
+// ============================================================================
+const learn = defineCollection({
+    type: 'content',
+    schema: z.object({
+        title: z.string(),
+        type: z.enum(['concept', 'protocol', 'implementation', 'case-study']),
+        domain: z.enum(['midnight', 'federated-learning', 'iot-edge', 'agentic-ai']),
+        difficulty: z.enum(['beginner', 'intermediate', 'advanced', 'expert']).default('intermediate'),
+        tier: z.enum(['free', 'premium']).default('free'),
+        description: z.string().optional(),
+        tags: z.array(z.string()).default([]),
+        prerequisites: z.array(z.string()).default([]),
+        related: z.array(z.string()).default([]),
+        references: z.array(z.string()).default([]),
+        lastUpdated: z.coerce.date(),
+        updatedBy: z.string(),
+        // Keep some legacy fields for compatibility
+        shortTitle: z.string().optional(),
+        projects: z.array(z.enum(['edgechain', 'msingi', 'ndani'])).default([]),
+        externalLinks: z.array(z.object({
+            label: z.string(),
+            url: z.string().url()
+        })).default([])
+    })
+});
+
+// ============================================================================
+// NEW: Papers collection (research paper metadata as JSON)
+// ============================================================================
+const papers = defineCollection({
+    type: 'data',
+    schema: z.object({
+        title: z.string(),
+        authors: z.array(z.object({
+            name: z.string(),
+            orcid: z.string().optional(),
+        })),
+        year: z.number(),
+        venue: z.string().optional(),
+        doi: z.string().optional(),
+        arxivId: z.string().optional(),
+        bibtex: z.string(),
+        tags: z.array(z.string()).default([]),
+        domain: z.string().optional(),
+        abstract: z.string().optional(),
+    })
+});
+
+// ============================================================================
+// LEGACY: Keep existing collections for backward compatibility
+// ============================================================================
 const concepts = defineCollection({
     type: 'content',
     schema: z.object({
@@ -96,7 +149,9 @@ const stories = defineCollection({
 });
 
 export const collections = {
-    concepts,
+    learn,      // NEW: Domain-organized learning content
+    papers,     // NEW: Research paper metadata
+    concepts,   // LEGACY: Keep for backward compatibility
     projects,
     updates,
     protocols,

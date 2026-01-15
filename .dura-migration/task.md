@@ -23,12 +23,23 @@
 - [x] Update navigation links
 
 ### Phase 2: Content Reorganization
-- [ ] Create new directory structure (`src/content/learn/...`)
-- [ ] Move existing concept files to new locations
-- [ ] Update `src/content/config.ts` with new schemas
-- [ ] Create new page routes (`/learn/[domain]/[slug]`)
-- [ ] Set up redirects from old URLs
-- [ ] Update MDX frontmatter in moved files
+- [x] Create new directory structure (`src/content/learn/...`)
+  - [x] `src/content/learn/midnight/concepts/`
+  - [x] `src/content/learn/midnight/protocols/`
+  - [x] `src/content/learn/federated-learning/concepts/`
+  - [x] `src/content/learn/iot-edge/concepts/`
+  - [x] `src/content/papers/`
+- [x] Move existing concept files to new locations
+  - [x] `zkp.mdx` → `learn/midnight/concepts/`
+  - [x] `brace.mdx` → `learn/midnight/protocols/`
+  - [x] `federated-learning.mdx` → `learn/federated-learning/concepts/`
+  - [x] `trustless-architecture.mdx` → `learn/iot-edge/concepts/`
+  - [x] `gabizon-plonk-nodate.mdx` → `papers/` (converted to JSON)
+  - [x] `kerber-kachina-2021.mdx` → `papers/` (converted to JSON)
+- [x] Update `src/content/config.ts` with new schemas
+- [x] Create new page routes (`/learn/[domain]/[slug]`)
+- [ ] Set up redirects from old URLs (deferred)
+- [x] Update MDX frontmatter in moved files
 
 ### Phase 3: CMS Configuration
 - [ ] Update `public/admin/config.yml` with new branding

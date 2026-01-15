@@ -1,0 +1,138 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { ProjectBadge, TraceabilityMatrix } from "../../../components";
+import Annotation from "../../../components/Annotation";
+import Comments from "../../../components/Comments";
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const learnEntries = await getCollection("learn");
+  return learnEntries.map((entry) => {
+    // entry.slug format: "domain/type/filename" e.g. "midnight/concepts/zkp"
+    const slugParts = entry.slug.split('/');
+    const filename = slugParts[slugParts.length - 1];
+    
+    return {
+      params: { 
+        domain: entry.data.domain,
+        slug: `${entry.data.type}s/${filename}`  // concepts/zkp, protocols/brace
+      },
+      props: { entry },
+    };
+  });
+}
+
+const { entry } = Astro.props;
+const { Content } = await entry.render();
+
+const typeColors = {
+  concept: 'bg-sky-100 text-sky-700',
+  protocol: 'bg-violet-100 text-violet-700',
+  implementation: 'bg-emerald-100 text-emerald-700',
+  'case-study': 'bg-orange-100 text-orange-700'
+};
+
+const domainInfo = {
+  'midnight': { name: 'Midnight & ZK', icon: '🌙' },
+  'federated-learning': { name: 'Federated Learning', icon: '🧠' },
+  'iot-edge': { name: 'IoT & Edge', icon: '📡' },
+  'agentic-ai': { name: 'Agentic AI', icon: '🤖' }
+};
+
+const domain = entry.data.domain;
+const dInfo = domainInfo[domain];
+---
+
+<BaseLayout title={`${entry.data.title} | Dura — The Knowledge Granary`}>
+  <div class="max-w-4xl mx-auto">
+    <div class="mb-12">
+      <div class="flex items-center gap-3 mb-6 text-sm">
+        <a
+          href="/learn"
+          class="font-medium text-slate-500 hover:text-amber-600 transition-colors"
+        >&larr; Learn</a>
+        <span class="text-slate-300">/</span>
+        <a
+          href={`/learn/${domain}`}
+          class="font-medium text-slate-500 hover:text-amber-600 transition-colors"
+        >{dInfo.icon} {dInfo.name}</a>
+        <span class="text-slate-300">/</span>
+        <span
+          class={`font-bold uppercase tracking-wider px-2 py-0.5 rounded ${typeColors[entry.data.type]}`}
+        >{entry.data.type}</span>
+      </div>
+
+      <h1 class="text-5xl font-extrabold text-slate-900 mb-6 tracking-tight">
+        {entry.data.title}
+      </h1>
+
+      <div
+        class="flex items-center flex-wrap gap-6 text-sm text-slate-500 border-b border-slate-100 pb-8"
+      >
+        {entry.data.projects && entry.data.projects.length > 0 && (
+          <div class="flex gap-2 items-center">
+            <span class="font-medium text-slate-400">Related Projects:</span>
+            {entry.data.projects.map((p) => <ProjectBadge project={p} />)}
+          </div>
+        )}
+        <span class="text-slate-300">•</span>
+        <span class="flex items-center gap-2">
+          <span class="font-medium text-slate-400">Difficulty:</span>
+          <span
+            class={`capitalize px-2 py-0.5 rounded font-medium ${
+              entry.data.difficulty === "beginner"
+                ? "bg-green-100 text-green-700"
+                : entry.data.difficulty === "intermediate"
+                  ? "bg-yellow-100 text-yellow-800"
+                  : entry.data.difficulty === "advanced"
+                    ? "bg-orange-100 text-orange-700"
+                    : "bg-red-100 text-red-700"
+            }`}>{entry.data.difficulty}</span>
+        </span>
+        <span class="text-slate-300">•</span>
+        <span>Updated: {entry.data.lastUpdated.toLocaleDateString()}</span>
+        {entry.data.tier === 'premium' && (
+          <>
+            <span class="text-slate-300">•</span>
+            <span class="px-2 py-0.5 bg-amber-100 text-amber-700 rounded font-medium">Premium</span>
+          </>
+        )}
+      </div>
+    </div>
+
+    <article
+      class="prose prose-lg prose-slate max-w-none
+      prose-headings:font-bold prose-headings:text-slate-900 prose-headings:tracking-tight
+      prose-a:text-amber-600 prose-a:no-underline hover:prose-a:underline
+      prose-p:text-slate-600 prose-p:leading-relaxed
+      prose-strong:text-slate-900 prose-strong:font-bold
+      prose-pre:bg-slate-900 prose-pre:shadow-lg prose-pre:border prose-pre:border-slate-800
+      prose-code:text-amber-700 prose-code:bg-amber-50 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none
+      prose-li:text-slate-600"
+    >
+      <Content components={{ Annotation }} />
+    </article>
+
+    <Comments client:visible />
+
+    {entry.data.related && entry.data.related.length > 0 && (
+      <div class="mt-20 pt-10 border-t border-slate-100">
+        <h3 class="text-lg font-bold text-slate-900 mb-6">
+          Explore Related Content
+        </h3>
+        <div class="flex flex-wrap gap-3">
+          {entry.data.related.map((slug) => (
+            <a
+              href={`/learn/${domain}/concepts/${slug}`}
+              class="px-4 py-2 bg-white border border-slate-200 rounded-full text-sm font-medium text-slate-600 hover:border-amber-300 hover:text-amber-700 hover:shadow-sm transition-all"
+            >
+              {slug}
+            </a>
+          ))}
+        </div>
+      </div>
+    )}
+  </div>
+</BaseLayout>

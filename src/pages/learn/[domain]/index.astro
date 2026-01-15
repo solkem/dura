@@ -1,0 +1,134 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const domains = ['midnight', 'federated-learning', 'iot-edge', 'agentic-ai'];
+  return domains.map(domain => ({
+    params: { domain },
+    props: { domain }
+  }));
+}
+
+const { domain } = Astro.props;
+
+const learnEntries = await getCollection("learn", ({ data }) => data.domain === domain);
+
+const domainInfo = {
+  'midnight': {
+    name: 'Midnight & ZK',
+    description: 'Zero-knowledge proofs, privacy-preserving smart contracts, and cryptographic protocols.',
+    icon: '🌙',
+    color: 'violet'
+  },
+  'federated-learning': {
+    name: 'Federated Learning',
+    description: 'Privacy-preserving machine learning where the model comes to the data.',
+    icon: '🧠',
+    color: 'blue'
+  },
+  'iot-edge': {
+    name: 'IoT & Edge',
+    description: 'Trustless architectures for IoT devices and edge computing.',
+    icon: '📡',
+    color: 'emerald'
+  },
+  'agentic-ai': {
+    name: 'Agentic AI',
+    description: 'Autonomous AI agents with verifiable actions and accountable behavior.',
+    icon: '🤖',
+    color: 'amber'
+  }
+};
+
+const info = domainInfo[domain];
+
+// Group by type
+const groupedByType = {
+  concepts: learnEntries.filter(e => e.data.type === 'concept'),
+  protocols: learnEntries.filter(e => e.data.type === 'protocol'),
+  implementations: learnEntries.filter(e => e.data.type === 'implementation'),
+  'case-studies': learnEntries.filter(e => e.data.type === 'case-study')
+};
+
+const typeLabels = {
+  concepts: 'Concepts',
+  protocols: 'Protocols',
+  implementations: 'Implementations',
+  'case-studies': 'Case Studies'
+};
+
+const typeColors = {
+  concepts: 'bg-sky-100 text-sky-700 border-sky-200',
+  protocols: 'bg-violet-100 text-violet-700 border-violet-200',
+  implementations: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+  'case-studies': 'bg-orange-100 text-orange-700 border-orange-200'
+};
+---
+
+<BaseLayout title={`${info.name} | Dura — The Knowledge Granary`}>
+  <div class="max-w-5xl mx-auto">
+    <div class="mb-12">
+      <a href="/learn" class="text-sm font-medium text-slate-500 hover:text-amber-600 transition-colors">
+        &larr; Back to Learn
+      </a>
+    </div>
+
+    <div class="text-center mb-16">
+      <span class="text-6xl mb-4 block">{info.icon}</span>
+      <h1 class="text-5xl font-extrabold text-stone-900 mb-6 tracking-tight">
+        {info.name}
+      </h1>
+      <p class="text-xl text-slate-600 max-w-2xl mx-auto">
+        {info.description}
+      </p>
+    </div>
+
+    {Object.entries(groupedByType).map(([type, entries]) => (
+      entries.length > 0 && (
+        <div class="mb-12">
+          <h2 class="text-2xl font-bold text-stone-900 mb-6">{typeLabels[type]}</h2>
+          <div class="grid gap-4">
+            {entries.map((entry) => (
+              <a
+                href={`/learn/${domain}/${type}/${entry.slug.split('/').pop()}`}
+                class="block p-6 bg-white border border-slate-200 rounded-xl hover:border-amber-300 hover:shadow-md transition-all"
+              >
+                <div class="flex items-center justify-between">
+                  <div>
+                    <h3 class="text-lg font-bold text-slate-900">{entry.data.title}</h3>
+                    {entry.data.description && (
+                      <p class="text-sm text-slate-500 mt-1">{entry.data.description}</p>
+                    )}
+                  </div>
+                  <div class="flex items-center gap-3">
+                    <span class={`px-3 py-1 text-xs font-medium rounded-full ${typeColors[type]}`}>
+                      {entry.data.type}
+                    </span>
+                    <span class={`px-3 py-1 text-xs font-medium rounded-full capitalize ${
+                      entry.data.difficulty === 'beginner' ? 'bg-green-100 text-green-700' :
+                      entry.data.difficulty === 'intermediate' ? 'bg-yellow-100 text-yellow-700' :
+                      entry.data.difficulty === 'advanced' ? 'bg-orange-100 text-orange-700' :
+                      'bg-red-100 text-red-700'
+                    }`}>
+                      {entry.data.difficulty}
+                    </span>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      )
+    ))}
+
+    {learnEntries.length === 0 && (
+      <div class="text-center py-20">
+        <p class="text-slate-500 text-lg">No content available yet in this domain.</p>
+        <p class="text-slate-400 mt-2">Check back soon for new learning materials.</p>
+      </div>
+    )}
+  </div>
+</BaseLayout>

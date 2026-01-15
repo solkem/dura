@@ -1,0 +1,14 @@
+{
+  "title": "PlonK: Permutations over Lagrange-bases for Oecumenical Noninteractive arguments of Knowledge",
+  "authors": [
+    { "name": "Ariel Gabizon" },
+    { "name": "Zachary J. Williamson" },
+    { "name": "Oana Ciobotaru" }
+  ],
+  "year": 2019,
+  "venue": "IACR ePrint Archive",
+  "bibtex": "@misc{gabizon_plonk_nodate,\n  author = {Gabizon, Ariel and Williamson, Zachary J. and Ciobotaru, Oana},\n  title = {{PlonK}: Permutations over Lagrange-bases for Oecumenical Noninteractive arguments of Knowledge},\n  year = {2019},\n  howpublished = {IACR ePrint Archive}\n}",
+  "tags": ["zkp", "plonk", "snark", "cryptography"],
+  "domain": "midnight",
+  "abstract": "A universal SNARK with a structured reference string that can be updated."
+}

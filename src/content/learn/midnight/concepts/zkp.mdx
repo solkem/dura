@@ -1,0 +1,50 @@
+---
+title: "Zero-Knowledge Proofs (ZKPs)"
+shortTitle: "ZKPs"
+type: "concept"
+domain: "midnight"
+tier: "free"
+difficulty: "intermediate"
+description: "A cryptographic method letting you prove something is true without revealing the underlying data."
+tags: ["cryptography", "privacy", "zkp"]
+prerequisites: []
+related: ["recursive-snarks", "snark-stack", "kachina"]
+references: []
+projects: ["edgechain", "msingi"]
+lastUpdated: 2024-12-11
+updatedBy: "solomon"
+externalLinks:
+  - label: "Midnight ZK Docs"
+    url: "https://docs.midnight.network/zk"
+---
+
+import { Analogy, ProjectExample } from '../../../../components';
+
+A cryptographic method letting you prove something is true without revealing the underlying data.
+
+<Analogy>
+The "Where's Waldo" analogy: You prove you found Waldo by showing him through a tiny hole in a large sheet covering the page. The verifier sees Waldo exists, but learns nothing about where he is or what else is on the page.
+</Analogy>
+
+## General Examples
+
+- Prove you're over 21 to a bar without showing your birthdate or address
+- Prove you have sufficient funds for a loan without revealing your total balance
+- Prove you're a citizen of an approved country without revealing which one
+
+## Project Applications
+
+<ProjectExample project="edgechain">
+**ProveYieldAboveThreshold circuit** — farmer proves yield > quota without revealing actual harvest amount. The NGO verifies compliance; the farmer keeps their data private.
+</ProjectExample>
+
+<ProjectExample project="msingi">
+**BRACE protocol** — device proves it's registered without revealing which device it is (1/N anonymity). Uses commitment `C = H(pk || r)` where pk and r remain secret.
+</ProjectExample>
+
+## How It Works (Simplified)
+
+1. **Prover** has secret data (e.g., actual yield = 450kg)
+2. **Prover** generates cryptographic proof: "I know a value > 400kg"
+3. **Verifier** checks proof validity without learning 450kg
+4. **Result**: Statement verified, data protected
