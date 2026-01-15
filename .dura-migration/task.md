@@ -42,10 +42,10 @@
 - [x] Update MDX frontmatter in moved files
 
 ### Phase 3: CMS Configuration
-- [ ] Update `public/admin/config.yml` with new branding
-- [ ] Update backend repo reference
-- [ ] Add new collections for learn structure
-- [ ] Test CMS functionality
+- [x] Update `public/admin/config.yml` with new branding
+- [x] Update backend repo reference
+- [x] Add new collections for learn structure
+- [x] Test CMS functionality
 
 ### Phase 4: Infrastructure (Future)
 - [ ] Add backend dependencies (Hono, Drizzle, Lucia)

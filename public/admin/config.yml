@@ -1,90 +1,142 @@
 backend:
   name: github
-  repo: your-org/midnight-learning
+  repo: solkem/dura
   branch: main
-  base_url: https://your-site.vercel.app
+  base_url: https://dura.fly.dev
   auth_endpoint: /api/auth
 
 local_backend: true
-
 publish_mode: editorial_workflow
 media_folder: public/images
 public_folder: /images
+logo_url: /images/dura-logo.svg
 
 collections:
-  - name: concepts
-    label: "Concepts"
-    folder: "src/content/concepts"
+  # =================================================================
+  # NEW: Learn Content Collections (Domain-organized)
+  # =================================================================
+  
+  # Midnight & ZK Domain
+  - name: learn-midnight-concepts
+    label: "Midnight → Concepts"
+    folder: "src/content/learn/midnight/concepts"
     create: true
     extension: mdx
     format: frontmatter
     fields:
       - { name: title, label: Title, widget: string }
-      - { name: shortTitle, label: "Short Title", widget: string, required: false }
-      - { name: timestamp, label: "Video Timestamp", widget: string, required: false }
-      - name: projects
-        label: Projects
-        widget: select
-        multiple: true
-        options: ["edgechain", "msingi", "ndani"]
-      - name: category
-        label: Category
-        widget: select
-        options:
-          - { label: "Cryptography", value: "cryptography" }
-          - { label: "Economics", value: "economics" }
-          - { label: "Identity", value: "identity" }
-          - { label: "Compliance", value: "compliance" }
-          - { label: "Infrastructure", value: "infrastructure" }
-      - name: difficulty
-        label: Difficulty
-        widget: select
-        options: ["beginner", "intermediate", "advanced"]
-        default: "intermediate"
-      - name: section
-        label: "Research Section"
-        widget: select
-        required: false
-        options: ["background", "methodology", "evaluation", "discussion", "related_work"]
+      - { name: type, label: Type, widget: hidden, default: concept }
+      - { name: domain, label: Domain, widget: hidden, default: midnight }
+      - { name: difficulty, label: Difficulty, widget: select, options: [beginner, intermediate, advanced, expert], default: intermediate }
+      - { name: tier, label: "Access Tier", widget: select, options: [free, premium], default: free }
+      - { name: description, label: Description, widget: text, required: false }
+      - { name: tags, label: Tags, widget: list, required: false }
+      - { name: prerequisites, label: Prerequisites, widget: list, required: false }
+      - { name: related, label: Related Content, widget: list, required: false }
       - { name: lastUpdated, label: "Last Updated", widget: datetime }
       - { name: updatedBy, label: "Updated By", widget: string }
-      - name: relatedConcepts
-        label: "Related Concepts"
-        widget: list
-        field: { name: slug, label: Slug, widget: string }
       - { name: body, label: Body, widget: markdown }
 
-  - name: edgechain-concepts
-    label: "EdgeChain Concepts"
-    folder: "src/content/concepts"
-    filter: { field: "projects", value: "edgechain" }
+  - name: learn-midnight-protocols
+    label: "Midnight → Protocols"
+    folder: "src/content/learn/midnight/protocols"
     create: true
     extension: mdx
     format: frontmatter
     fields:
       - { name: title, label: Title, widget: string }
-      # Simplified view for specific filtering, but typically reuses same schema
+      - { name: type, label: Type, widget: hidden, default: protocol }
+      - { name: domain, label: Domain, widget: hidden, default: midnight }
+      - { name: difficulty, label: Difficulty, widget: select, options: [beginner, intermediate, advanced, expert], default: intermediate }
+      - { name: tier, label: "Access Tier", widget: select, options: [free, premium], default: free }
+      - { name: description, label: Description, widget: text, required: false }
+      - { name: tags, label: Tags, widget: list, required: false }
+      - { name: prerequisites, label: Prerequisites, widget: list, required: false }
+      - { name: related, label: Related Content, widget: list, required: false }
+      - { name: lastUpdated, label: "Last Updated", widget: datetime }
+      - { name: updatedBy, label: "Updated By", widget: string }
+      - { name: body, label: Body, widget: markdown }
 
-  - name: ndani-concepts
-    label: "Ndani Concepts"
-    folder: "src/content/concepts"
-    filter: { field: "projects", value: "ndani" }
+  # Federated Learning Domain
+  - name: learn-federated-concepts
+    label: "Federated Learning → Concepts"
+    folder: "src/content/learn/federated-learning/concepts"
     create: true
     extension: mdx
     format: frontmatter
     fields:
       - { name: title, label: Title, widget: string }
-      # Simplified view for specific filtering, but typically reuses same schema
+      - { name: type, label: Type, widget: hidden, default: concept }
+      - { name: domain, label: Domain, widget: hidden, default: federated-learning }
+      - { name: difficulty, label: Difficulty, widget: select, options: [beginner, intermediate, advanced, expert], default: intermediate }
+      - { name: tier, label: "Access Tier", widget: select, options: [free, premium], default: free }
+      - { name: description, label: Description, widget: text, required: false }
+      - { name: tags, label: Tags, widget: list, required: false }
+      - { name: prerequisites, label: Prerequisites, widget: list, required: false }
+      - { name: related, label: Related Content, widget: list, required: false }
+      - { name: lastUpdated, label: "Last Updated", widget: datetime }
+      - { name: updatedBy, label: "Updated By", widget: string }
+      - { name: body, label: Body, widget: markdown }
 
-  - name: msingi-concepts
-    label: "Msingi Concepts"
-    folder: "src/content/concepts"
-    filter: { field: "projects", value: "msingi" }
+  # IoT & Edge Domain
+  - name: learn-iot-concepts
+    label: "IoT & Edge → Concepts"
+    folder: "src/content/learn/iot-edge/concepts"
     create: true
     extension: mdx
     format: frontmatter
     fields:
       - { name: title, label: Title, widget: string }
+      - { name: type, label: Type, widget: hidden, default: concept }
+      - { name: domain, label: Domain, widget: hidden, default: iot-edge }
+      - { name: difficulty, label: Difficulty, widget: select, options: [beginner, intermediate, advanced, expert], default: intermediate }
+      - { name: tier, label: "Access Tier", widget: select, options: [free, premium], default: free }
+      - { name: description, label: Description, widget: text, required: false }
+      - { name: tags, label: Tags, widget: list, required: false }
+      - { name: prerequisites, label: Prerequisites, widget: list, required: false }
+      - { name: related, label: Related Content, widget: list, required: false }
+      - { name: lastUpdated, label: "Last Updated", widget: datetime }
+      - { name: updatedBy, label: "Updated By", widget: string }
+      - { name: body, label: Body, widget: markdown }
+
+  # Papers Collection (JSON Data)
+  - name: papers
+    label: "Research Papers"
+    folder: "src/content/papers"
+    create: true
+    extension: json
+    format: json
+    fields:
+        - { name: title, label: Title, widget: string }
+        - name: authors
+          label: Authors
+          widget: list
+          fields:
+             - { name: name, label: Name, widget: string }
+             - { name: orcid, label: ORCID, widget: string, required: false }
+        - { name: year, label: Year, widget: number, value_type: int }
+        - { name: venue, label: Venue, widget: string, required: false }
+        - { name: doi, label: DOI, widget: string, required: false }
+        - { name: arxivId, label: ArXiv ID, widget: string, required: false }
+        - { name: bibtex, label: BibTeX, widget: text }
+        - { name: abstract, label: Abstract, widget: text, required: false }
+        - { name: tags, label: Tags, widget: list, required: false }
+        - { name: domain, label: Domain, widget: string, required: false }
+
+  # =================================================================
+  # LEGACY: Existing Collections (Keep for backward compatibility)
+  # =================================================================
+  
+  - name: concepts
+    label: "Concepts (Legacy)"
+    folder: "src/content/concepts"
+    create: true
+    extension: mdx
+    format: frontmatter
+    fields:
+      - { name: title, label: Title, widget: string }
+      - { name: category, label: Category, widget: string }
+      - { name: body, label: Body, widget: markdown }
 
   - name: projects
     label: "Projects"
@@ -94,20 +146,6 @@ collections:
     format: frontmatter
     fields:
       - { name: title, label: Title, widget: string }
-      - { name: tagline, label: Tagline, widget: string }
-      - name: status
-        label: Status
-        widget: select
-        options: ["research", "development", "pilot", "production"]
-      - { name: repo, label: "Repository URL", widget: string, required: false }
-      - name: team
-        label: Team
-        widget: list
-        fields:
-          - { name: name, label: Name, widget: string }
-          - { name: role, label: Role, widget: string }
-      - { name: lastUpdated, label: "Last Updated", widget: datetime }
-      - { name: updatedBy, label: "Updated By", widget: string }
       - { name: body, label: Body, widget: markdown }
 
   - name: updates
@@ -120,64 +158,34 @@ collections:
     fields:
       - { name: title, label: Title, widget: string }
       - { name: date, label: Date, widget: datetime }
-      - { name: author, label: Author, widget: string }
-      - name: project
-        label: Project
-        widget: select
-        options: ["edgechain", "msingi", "ndani", "platform", "all"]
-      - name: type
-        label: "Update Type"
-        widget: select
-        options: ["research", "implementation", "documentation", "review"]
       - { name: body, label: Body, widget: markdown }
 
-  - name: msingi-protocols
-    label: "Msingi Protocol Specifications"
+  - name: protocols
+    label: "Protocols (Legacy)"
     folder: "src/content/protocols"
     create: true
+    extension: mdx
+    format: frontmatter
     fields:
       - { name: title, label: Title, widget: string }
-      - { name: acronym, label: Acronym, widget: string }
-      - { name: purpose, label: "One-line Purpose", widget: string }
-      - name: guarantees
-        label: "Security Guarantees"
-        widget: select
-        multiple: true
-        options: ["PG1", "PG2", "PG3", "PG4", "PG5", "PG6", "EG1", "EG2", "EG3", "EG4"]
-      - name: adversaries
-        label: "Adversaries Addressed"
-        widget: select
-        multiple: true
-        options: ["A_gov", "A_corp", "A_gw", "A_free", "A_grief", "A_sybil"]
-      - { name: lastUpdated, label: "Last Updated", widget: datetime }
-      - { name: updatedBy, label: "Updated By", widget: string }
       - { name: body, label: Body, widget: markdown }
 
-  - name: farmer-stories
+  - name: stories
     label: "Farmer Stories"
     folder: "src/content/stories"
     create: true
+    extension: mdx
+    format: frontmatter
     fields:
       - { name: title, label: Title, widget: string }
-      - { name: persona, label: "Farmer Persona", widget: string, default: "Nyakupfuya" }
-      - { name: threat, label: "Threat Scenario", widget: text }
-      - { name: protection, label: "How EdgeChain Protects", widget: text }
       - { name: body, label: Body, widget: markdown }
 
-  - name: open-questions
-    label: "Open Questions (Co-Author Input)"
+  - name: questions
+    label: "Open Questions"
     folder: "src/content/questions"
     create: true
+    extension: mdx
+    format: frontmatter
     fields:
-      - { name: title, label: Question, widget: string }
-      - name: area
-        label: "Research Area"
-        widget: select
-        options: 
-          - "Incentive Design"
-          - "Security Proofs"
-          - "Economic Modeling"
-          - "Related Work"
-          - "Broader Impact"
-      - { name: context, label: "Context/Background", widget: text }
-      - { name: body, label: "Detailed Discussion", widget: markdown }
+      - { name: title, label: Title, widget: string }
+      - { name: body, label: Body, widget: markdown }
