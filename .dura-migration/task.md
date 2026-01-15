@@ -57,3 +57,8 @@
 - [ ] Search implementation
 - [ ] Progress tracking
 - [ ] Paper management
+
+### Deployment (Alternative Strategy)
+- [x] Create GitHub Actions workflow (`.github/workflows/deploy.yml`)
+- [x] Push workflow to GitHub
+- [ ] User: Add `FLY_API_TOKEN` to GitHub Secrets
