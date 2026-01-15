@@ -3,15 +3,14 @@ import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
 import mdx from '@astrojs/mdx';
-import vercel from '@astrojs/vercel/serverless';
+import node from '@astrojs/node';
 
 // https://astro.build/config
 export default defineConfig({
   integrations: [react(), mdx()],
   output: 'hybrid',
-  adapter: vercel({
-    webAnalytics: { enabled: true },
-    maxDuration: 10
+  adapter: node({
+    mode: 'standalone'
   }),
   vite: {
     plugins: [tailwindcss()]
