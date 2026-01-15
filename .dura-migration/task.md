@@ -47,16 +47,30 @@
 - [x] Add new collections for learn structure
 - [x] Test CMS functionality
 
-### Phase 4: Infrastructure (Future)
-- [ ] Add backend dependencies (Hono, Drizzle, Lucia)
-- [ ] Update `astro.config.mjs` for hybrid mode
-- [ ] Create database schema
-- [ ] Implement authentication
+### Phase 4: Infrastructure (Complete)
+- [x] Add backend dependencies (Hono, Drizzle, Lucia)
+- [x] Update `astro.config.mjs` for hybrid mode
+- [x] Database Setup
+    - [x] `drizzle.config.ts`
+    - [x] `src/db/index.ts` (SQLite connection)
+    - [x] `src/db/schema.ts` (Users/Sessions/Papers)
+- [x] Implement authentication (Lucia v3)
+    - [x] Middleware & Types (`env.d.ts`, `middleware.ts`)
+    - [x] Signup Flow (`pages/signup.astro`, `api/signup.ts`)
+    - [x] Login Flow (`pages/login.astro`, `api/login.ts`)
+    - [x] Logout & UI Updates
+- [x] Update `Dockerfile` for native modules (better-sqlite3)
 
-### Phase 5: Core Features (Future)
-- [ ] Search implementation
-- [ ] Progress tracking
-- [ ] Paper management
+### Phase 5: Core Features (Complete)
+- [x] Search implementation (Pagefind)
+- [x] Progress tracking
+    - [x] Update Schema (add `user_progress` table)
+    - [x] API for marking read/unread
+    - [x] UI indicators
+- [x] Paper management
+    - [x] Schema update (user_stars)
+    - [x] UI for starring papers
+    - [x] Library page
 
 ### Deployment (DigitalOcean Migration)
 - [x] Pivot strategy: Deploy to DigitalOcean Droplet (`dura.disruptiveiot.org`) to check memory/cost
@@ -66,3 +80,4 @@
 - [x] Create Deployment Guide (`deployment-guide.md`)
 - [x] User: Configure Nginx & DNS (see Guide)
 - [x] User: Add Secrets to GitHub (`DO_HOST`, `DO_USERNAME`, `DO_SSH_KEY`)
+- [x] Verify SSL and live site access

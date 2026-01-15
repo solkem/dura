@@ -13,6 +13,14 @@ export default defineConfig({
     mode: 'standalone'
   }),
   vite: {
-    plugins: [tailwindcss()]
+    plugins: [tailwindcss()],
+    optimizeDeps: {
+      exclude: ["better-sqlite3", "oslo"]
+    },
+    build: {
+      rollupOptions: {
+        external: ["better-sqlite3"]
+      }
+    }
   }
 });

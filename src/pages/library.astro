@@ -1,0 +1,65 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+import { db } from "../db";
+import { userStars } from "../db/schema";
+import { eq } from "drizzle-orm";
+
+if (!Astro.locals.user) {
+    return Astro.redirect("/login");
+}
+
+// Get user's starred papers
+let starredSlugs: string[] = [];
+try {
+  const stars = await db.select().from(userStars).where(eq(userStars.userId, Astro.locals.user.id));
+  starredSlugs = stars.map(s => s.paperSlug);
+} catch (e) {
+  // Graceful fallback for build/db issues
+  console.error("Failed to fetch library", e);
+}
+
+// Fetch actual paper content
+const allPapers = await getCollection("papers");
+const savedPapers = allPapers.filter(p => starredSlugs.includes(p.slug));
+---
+
+<BaseLayout title="My Library | Dura">
+    <div class="max-w-4xl mx-auto mt-12 mb-20 px-4">
+         <div class="flex items-center justify-between mb-8">
+            <h1 class="text-3xl font-bold text-stone-900">My Library</h1>
+            <span class="bg-amber-100 text-amber-800 text-sm font-bold px-3 py-1 rounded-full">
+                {savedPapers.length} Papers
+            </span>
+         </div>
+         
+         {savedPapers.length === 0 ? (
+             <div class="text-center py-20 bg-slate-50 rounded-3xl border border-dashed border-slate-200">
+                 <p class="text-slate-500 mb-4">You haven't saved any papers yet.</p>
+                 <a href="/papers" class="text-amber-700 font-bold hover:underline">Browse Research Papers &rarr;</a>
+             </div>
+         ) : (
+             <div class="grid grid-cols-1 gap-4">
+                 {savedPapers.map(paper => (
+                     <div class="p-6 bg-white border border-slate-100 rounded-xl shadow-sm hover:shadow-md transition-all flex justify-between items-start">
+                         <div>
+                             <h3 class="text-xl font-bold text-slate-800 mb-2">
+                                <a href={`/papers/${paper.slug}`} class="hover:text-amber-700">{paper.data.title}</a>
+                             </h3>
+                             <p class="text-slate-500 text-sm mb-4 line-clamp-2">{paper.data.abstract}</p>
+                             <div class="flex gap-2 text-xs font-mono text-slate-400">
+                                 {paper.data.year && <span>{paper.data.year}</span>}
+                                 <span>•</span>
+                                 <span>{paper.data.authors.join(", ")}</span>
+                             </div>
+                         </div>
+                         <a href={`/papers/${paper.slug}`} class="text-slate-300 hover:text-amber-500 p-2">
+                            <span class="sr-only">View</span>
+                            &rarr;
+                         </a>
+                     </div>
+                 ))}
+             </div>
+         )}
+    </div>
+</BaseLayout>

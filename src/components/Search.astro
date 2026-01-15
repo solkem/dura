@@ -1,0 +1,39 @@
+---
+---
+
+<div id="search" class="ml-4"></div>
+
+<link href="/pagefind/pagefind-ui.css" rel="stylesheet" />
+<script is:inline>
+  window.addEventListener("load", () => {
+    // Dynamic import to avoid build-time errors if the file doesn't exist yet
+    // In dev, pagefind might not be available until a build is run
+    const script = document.createElement("script");
+    script.src = "/pagefind/pagefind-ui.js";
+    script.onload = () => {
+        new PagefindUI({ 
+            element: "#search", 
+            showSubResults: true,
+            showImages: false,
+            debounceTimeoutMs: 500
+        });
+    }
+    document.body.appendChild(script);
+  });
+</script>
+
+<style is:global>
+    /* Customizing Pagefind UI to match Dura theme */
+    .pagefind-ui__search-input {
+        @apply bg-slate-50 border-slate-200 rounded-full px-4 py-2 text-sm focus:ring-2 focus:ring-amber-500 outline-none transition-all;
+    }
+    .pagefind-ui__drawer {
+        @apply shadow-xl rounded-xl border border-slate-100 bg-white/95 backdrop-blur-md mt-2;
+    }
+    .pagefind-ui__result-link {
+        @apply text-amber-900 font-bold hover:text-amber-700 !important;
+    }
+    .pagefind-ui__result-excerpt {
+        @apply text-slate-500 text-sm;
+    }
+</style>

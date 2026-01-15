@@ -1,0 +1,64 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+import { StarButton } from "../../components";
+
+export async function getStaticPaths() {
+    const papers = await getCollection("papers");
+    return papers.map(paper => ({
+        params: { slug: paper.slug },
+        props: { paper },
+    }));
+}
+
+const { paper } = Astro.props;
+---
+
+<BaseLayout title={`${paper.data.title} | Papers`}>
+    <article class="max-w-4xl mx-auto mt-12 mb-24 px-4">
+        <header class="mb-12 border-b border-stone-100 pb-12">
+            <div class="flex justify-between items-start mb-6">
+                <div class="flex gap-2 text-sm font-bold text-amber-700 uppercase tracking-widest">
+                    Research Paper
+                </div>
+                {Astro.locals.user && <StarButton client:load slug={paper.slug} />}
+            </div>
+            
+            <h1 class="text-4xl md:text-5xl font-extrabold text-stone-900 mb-8 leading-tight">
+                {paper.data.title}
+            </h1>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 text-sm text-stone-600 bg-stone-50 p-6 rounded-2xl border border-stone-100">
+                <div>
+                    <span class="block font-bold text-stone-900 mb-1">Authors</span>
+                    {paper.data.authors.join(", ")}
+                </div>
+                <div>
+                    <span class="block font-bold text-stone-900 mb-1">Year</span>
+                    {paper.data.year || "N/A"}
+                </div>
+                {paper.data.url && (
+                    <div class="sm:col-span-2">
+                        <span class="block font-bold text-stone-900 mb-1">External Link</span>
+                        <a href={paper.data.url} target="_blank" class="text-amber-700 hover:underline break-all">
+                            {paper.data.url}
+                        </a>
+                    </div>
+                )}
+            </div>
+        </header>
+
+        <div class="prose prose-lg prose-stone max-w-none">
+            <h3 class="text-xl font-bold text-stone-900 mb-4">Abstract</h3>
+            <p class="text-stone-700 leading-relaxed text-lg mb-8 bg-white p-6 border-l-4 border-amber-500 shadow-sm italic">
+                {paper.data.abstract}
+            </p>
+            
+            {/* If there was content body, render it here. For now mostly metadata */}
+        </div>
+        
+        <div class="mt-12 pt-8 border-t border-stone-100 flex justify-between">
+            <a href="/papers" class="font-bold text-stone-500 hover:text-stone-900">&larr; Back to Papers</a>
+        </div>
+    </article>
+</BaseLayout>

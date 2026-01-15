@@ -8,3 +8,6 @@ export * from './InteractiveFAQ';
 export * from './ArchitectureDiagram';
 export * from './TraceabilityMatrix';
 export * from './simulations';
+export { default as Search } from './Search.astro';
+export * from './Progress';
+export * from './StarButton';
