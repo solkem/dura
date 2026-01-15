@@ -1,9 +1,10 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { getCollection } from "astro:content";
 import { db } from "../db";
 import { userStars } from "../db/schema";
 import { eq } from "drizzle-orm";
+
+export const prerender = false;
 
 if (!Astro.locals.user) {
     return Astro.redirect("/login");

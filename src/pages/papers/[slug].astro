@@ -21,7 +21,7 @@ const { paper } = Astro.props;
                 <div class="flex gap-2 text-sm font-bold text-amber-700 uppercase tracking-widest">
                     Research Paper
                 </div>
-                {Astro.locals.user && <StarButton client:load slug={paper.slug} />}
+                <StarButton client:load slug={paper.slug} />
             </div>
             
             <h1 class="text-4xl md:text-5xl font-extrabold text-stone-900 mb-8 leading-tight">
