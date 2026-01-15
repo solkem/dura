@@ -44,12 +44,9 @@ jobs:
             type=sha,prefix=sha-
 
       - name: Build and push Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+        run: |
+          docker build . --tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
 
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
