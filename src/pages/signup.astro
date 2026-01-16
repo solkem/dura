@@ -4,6 +4,8 @@ import { db } from "../db";
 import { invitations } from "../db/schema";
 import { eq } from "drizzle-orm";
 
+export const prerender = false; // Must render at request time to access real database
+
 if (Astro.locals.user) {
 	return Astro.redirect("/");
 }
