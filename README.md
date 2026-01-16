@@ -21,6 +21,26 @@ When devices become economic actors—with wallets, the ability to transact, and
 - **Edge** — Operational Agency (devices that process locally)
 - **IoT** — Physical Reality (the hardware layer)
 
+Dura transforms complex blockchain, cryptography, and IoT research into accessible, interactive documentation. We bridge the gap between dense academic papers and practical understanding through:
+
+- **Simplified Explanations**: Complex concepts made accessible to everyone
+- **Research Papers**: Curated collection with starring and library features
+- **Progress Tracking**: Track your learning journey across content
+- **Collaborative Research**: Contribute and collaborate on research documentation
+
+### The Problem We Solve
+
+Blockchain research documentation typically fails in three ways:
+
+1. **Inaccessible Theory**: Dense whitepapers with no practical examples
+2. **Disconnected Practice**: Code implementations divorced from conceptual foundations
+3. **Static Content**: PDFs and wikis that can't keep pace with rapid research iteration
+
+We bridge theory and practice through **interactive concept cards** that show:
+- Simple analogies (e.g., "Where's Waldo" for ZKPs)
+- General cryptography principles
+- Project-specific implementations (actual circuits, protocols, architectures)
+
 ### The Two Sides of Dura
 
 | Side | Audience | Content |
