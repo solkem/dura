@@ -15,13 +15,22 @@ let inviteRole = "";
 
 // Validate invite token directly from database (SSR can't fetch its own API reliably)
 if (inviteToken) {
+    console.log("Checking invite token:", inviteToken);
     try {
         const invite = await db.select().from(invitations).where(eq(invitations.token, inviteToken)).get();
+        console.log("Invite query result:", invite);
         
         if (invite && !invite.usedAt && invite.expiresAt > Date.now()) {
             inviteValid = true;
             inviteEmail = invite.email;
             inviteRole = invite.role;
+            console.log("Invite valid!");
+        } else {
+            console.log("Invite invalid:", { 
+                exists: !!invite, 
+                used: invite?.usedAt, 
+                expired: invite ? invite.expiresAt < Date.now() : null 
+            });
         }
     } catch (e) {
         console.error("Invite validation error:", e);
