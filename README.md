@@ -10,12 +10,16 @@ A living knowledge base making complex science and technology accessible to ever
 
 ## 🎯 Purpose
 
-Dura transforms complex blockchain, cryptography, and IoT research into accessible, interactive documentation. We bridge the gap between dense academic papers and practical understanding through:
+Dura is part of the **Disruptive IoT** ecosystem exploring **The Economy of Things (EoT)** — the concept of IoT devices becoming economic participants, not just data collectors.
 
-- **Simplified Explanations**: Complex concepts made accessible to everyone
-- **Research Papers**: Curated collection with starring and library features
-- **Progress Tracking**: Track your learning journey across content
-- **Collaborative Research**: Contribute and collaborate on research documentation
+> *"IoT connected devices. EoT disrupts how they earn."*
+
+When devices become economic actors—with wallets, the ability to transact, and autonomous decision-making—everything changes. Dura documents the convergence of:
+
+- **Blockchain** — Economic Agency (devices with wallets)
+- **AI** — Cognitive Agency (devices that think)
+- **Edge** — Operational Agency (devices that process locally)
+- **IoT** — Physical Reality (the hardware layer)
 
 ### The Two Sides of Dura
 
@@ -31,16 +35,59 @@ Dura transforms complex blockchain, cryptography, and IoT research into accessib
 ### EdgeChain
 **Privacy-preserving agricultural AI for smallholder farmers**
 
-- Uses ZKPs to transform data from a weapon of exploitation into infrastructure for cooperative empowerment
-- Key Concept: Farmer proves yield > quota without revealing actual harvest amount
+**The Problem**: 96% of African farmers see digital agriculture as beneficial, yet adoption remains minimal due to justified fears of data exploitation. The "Nyakupfuya" (Shona: trapped farmer) faces surveillance from governments, NGOs, and agribusinesses.
+
+**The Solution**: EdgeChain uses Zero-Knowledge Proofs and federated learning to transform data from a weapon of punishment into infrastructure for cooperative empowerment.
+
+| Concept | Application |
+|---------|-------------|
+| ZKP | ProveYieldAboveThreshold circuits — farmer proves yield > quota without revealing actual harvest |
+| KACHINA | Compact smart contracts |
+| Disclosure Regime | Selective compliance proofs |
+
+**Constraints**: 2G network compatibility (SMS-first), 70% of target users live in poverty, deep distrust of data collection. Currently research-only (legal constraints until mid-2027).
+
+**Repo**: [github.com/solkem/edgechain](https://github.com/solkem/edgechain)
+
+---
 
 ### Msingi
-**Infrastructure layer for trustless device registration**
+**Anonymous IoT device identity and autonomous wallets**
 
-- BRACE protocol — device proves registration without revealing identity (1/N anonymity)
+**Core Thesis**: *Anonymity requires device-held keys, and ZK-enforced spending policies make device wallets safe.* If a human wallet pays for a device's transaction, the payment links device to human identity, destroying all privacy guarantees.
+
+**Three Pillars**:
+1. **BRACE** — Blind Registration (device proves it's registered without revealing which device)
+2. **IAR** — Incentivized Anonymous Relay
+3. **ACR** — Anonymous Contribution Rewards
+
+**Integration**: Msingi sensors submit anonymous attestations consumed by EdgeChain's Dual Merkle Root system to verify IoT data separately from manual farmer reports.
+
+**Repo**: [github.com/solkem/msingi](https://github.com/solkem/msingi)
+
+---
 
 ### Ndani
-**Privacy-preserving identity and compliance**
+**Trustless Privacy-Preserving Infrastructure for Machine Economies**
+
+**The Problem**: Existing IoT-blockchain systems (IOTA, Helium) allow devices to earn, but payments flow to human-controlled wallets. Privacy solutions rely on trusted gateways — if compromised, privacy is lost.
+
+**The Solution**: Ndani (Swahili for "Inside") moves the entire trust boundary *inside* the farmer's control:
+1. **Device-Held Wallets** — Keys live in the ATECC608A secure element
+2. **Local Proof Server** — Farmer-owned Raspberry Pi 5 generates ZK proofs locally
+
+**Hardware Stack (~$163.50)**:
+| Component | Function | Cost |
+|-----------|----------|------|
+| ESP32-S3 | Sensor Microcontroller | $8 |
+| ATECC608A | Identity + Wallet Keys | $2.50 |
+| SX1276 | LoRa Transceiver | $6 |
+| Raspberry Pi 5 | Local Proof Server | $80 |
+| Sensors/Power/Infra | Environment + Solar | $57 |
+
+**Architecture**: `[Sensor Node] <-- LoRa --> [Local Pi 5 Proof Server] <-- Internet --> [Midnight Network]`
+
+**Repo**: [github.com/solkem/ndani](https://github.com/solkem/ndani)
 
 ---
 
