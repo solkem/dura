@@ -125,4 +125,33 @@ Since multiple subdomains exist on the same server/IP, Nginx relies on **SNI (Se
 - **Future Fix**:
     - Investigate `Search.astro` style block.
     - Check `tailwind.config.mjs` for color inclusion.
-    - Resolve the build error on a dev machine that matches the CI environment (Linux).
+
+## Phase 6: Auth Fixes & Papers Page Correction (Completed)
+
+### Issues Resolved
+1. **Authentication API Errors**:
+   - **Problem**: Signup/Login failed with 404/500 errors.
+   - **Root Cause**: Astro hybrid mode requires `export const prerender = false` for API routes to run on-demand. Browser test sent JSON, but API expected form data (fixed by correcting test, but API needed SSR flush).
+   - **Fix**: Added `prerender = false` to `signup.ts`, `login.ts`, `logout.ts`, `progress.ts`, `star.ts`.
+   - **Database**: Initialized SQLite database in Docker container (was missing). Tables: `users`, `sessions`, `user_progress`, `user_stars`.
+
+2. **Papers Page Rendering**:
+   - **Problem**: Authors showed as `[object Object]` and links were `undefined`.
+   - **Root Cause**: Data collection schema mismatch. `paper.slug` used instead of `paper.id`, and `authors` array of objects joined directly.
+   - **Fix**: Updated `src/pages/papers/index.astro` to use `paper.id` and `authors.map(a => a.name).join(", ")`.
+
+3. **SSL/Nginx Configuration**:
+   - **Status**: Consolidated certificates using `certbot --expand`.
+   - **Current State**: SSL works but is **intermittent** (`ERR_SSL_PROTOCOL_ERROR`).
+   - **Workaround**: Access via `http://143.110.131.196:3000` is stable.
+
+### Verification
+- **Signup**: ✅ Working (Tested with `dbtest1`).
+- **Login**: ✅ Working.
+- **Content**: ✅ Papers page rendering correctly.
+- **Deployment**: ✅ GitHub Actions building and deploying successfully.
+
+### Next Steps (Phase 7)
+- **Fix SSL**: Investigate persistent Nginx/SSL handshake issues.
+- **Database Persistence**: Mount volume for `/app/data` to persist SQLite db across restarts.
+

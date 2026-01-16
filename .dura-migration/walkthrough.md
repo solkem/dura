@@ -1,90 +1,49 @@
-# Dura Migration Walkthrough (Phases 2 & 3)
+# Dura Deployment Verification Walkthrough
 
-This walkthrough documents the completion of **Phase 2 (Content Reorganization)** and **Phase 3 (CMS Configuration)** of the Dura migration.
+## ✅ What Works
 
-## Achieved Goals
+### 1. Authentication Flow
+- **Signup**: Successfully creates new accounts
+- **Login**: Correctly authenticates users
+- **Sessions**: Properly maintained with cookies
+- **Database**: SQLite initialized with user, session, and progress tables
 
-- [x] **New Content Structure**: Created domain-specific folders (`learn/midnight`, `learn/iot-edge`, etc.)
-- [x] **Content Migration**: Moved existing concepts to new locations and updated frontmatter
-- [x] **Papers Collection**: Converted MDX papers to JSON data format
-- [x] **Dynamic Routing**: Implemented `/learn/[domain]/[slug]` routing system
-- [x] **CMS Configuration**: Updated `admin/config.yml` with new collections and repo settings
+![Signup Success](/Users/solomonkembo/.gemini/antigravity/brain/dfc70170-f297-4608-a203-48cba1a74f90/signup_success_homepage_1768537459007.png)
 
-## Changes Overview
+### 2. Papers Page
+- Authors now display correctly (names instead of `[object Object]`)
+- Links use proper IDs (`gabizon-plonk-nodate`) instead of `undefined`
 
-### 1. Directory Structure
-Created the following structure in `src/content/`:
-```text
-src/content/
-├── learn/
-│   ├── midnight/
-│   │   ├── concepts/
-│   │   └── protocols/
-│   ├── federated-learning/
-│   │   └── concepts/
-│   └── iot-edge/
-│       └── concepts/
-└── papers/
-```
+### 3. Build & Deployment
+- GitHub Actions CI/CD working
+- Docker container running on DigitalOcean
+- Application accessible on port 3000
 
-### 2. Content Collections (`src/content/config.ts`)
-Added two new collections:
-- `learn`: For educational content (concepts, protocols)
-- `papers`: For research paper metadata (JSON)
+---
 
-### 3. CMS Configuration (`public/admin/config.yml`)
-Updated the Decap CMS config:
-- Changed repo to `solkem/dura`
-- Added new `learn-*` collections
-- Added `papers` collection
-- Retained legacy collections (`concepts`, `projects`) for safety
+## ⚠️ Known Issues
 
-## Validation
+### SSL Intermittent Error
+- **Symptom**: `ERR_SSL_PROTOCOL_ERROR` appears randomly
+- **Workaround**: Refresh the page or access via `http://143.110.131.196:3000`
+- **Status**: Nginx SSL config is correct, issue may be networking/caching
 
-### Build Verification
-Ran `npm run build` successfully (after fixing Node adapter version for Fly.io compatibility).
+---
 
-### CMS Verification
-The CMS configuration at `/admin/index.html` (which loads `config.yml`) is now pointing to the new repository and defines the new content schemas.
+## Fixes Applied
 
-## Deployment Setup
+| File | Change |
+|------|--------|
+| `src/pages/api/*.ts` | Added `export const prerender = false` for SSR |
+| `src/pages/papers/index.astro` | Fixed `paper.id` and `authors.map(a=>a.name)` |
+| `src/pages/papers/[slug].astro` | Fixed routing for data collection |
+| SSL Certificates | Consolidated with `certbot --expand` |
+| Nginx Config | Created separate server block for dura subdomain |
+| SQLite Database | Initialized with user/session/progress tables |
 
-### 3. DigitalOcean Deployment (Completed)
+---
 
-Successfully deployed the application to a 1GB Droplet using GitHub Actions for CI/CD.
-- **URL**: [https://dura.disruptiveiot.org](https://dura.disruptiveiot.org) (Live ✅)
-- **Repo**: [solkem/dura](https://github.com/solkem/dura)
-- **Infrastructure**:
-    - **Host**: DigitalOcean Droplet (Ubuntu 24.04)
-    - **Container**: `ghcr.io/solkem/dura:latest` (Node 20 Alpine)
-    - **Reverse Proxy**: Nginx (handling SSL termination and routing)
-
-#### Troubleshooting Resolution
-Users may encounter `ERR_SSL_PROTOCOL_ERROR` if hosting multiple subdomains on the same Droplet.
-- **Known Issue (Deployment Build)**: The deployment pipeline is currently failing due to a Tailwind CSS error in `Search.astro` (`Cannot apply unknown utility class bg-slate-50`). This needs to be resolved before the new features will appear on the live site.
-- **Known Issue (Local Build)**: `npm run build` on Windows may fail due to `better-sqlite3`.
-- **Fix**: Consolidate certificates into a single file to handle SNI correctly.
-    ```bash
-    certbot --nginx --expand -d disruptiveiot.org -d dura.disruptiveiot.org
-    ```
-- **Nginx Config**: Ensure both sites listen on IPv4 (`listen 443 ssl http2;`) and IPv6 (`listen [::]:443 ssl http2;`).
-
-![Deployment Success](dura_homepage_1768499889472.png)
-
-### How to Deploy
-The system is fully automated.
-1.  **Trigger**: Just push to the `main` branch.
-2.  **Monitor**: Watch the "Deploy to DigitalOcean" action in GitHub.
-
-### Troubleshooting
-If deployment fails, check:
-1.  **Secrets**: Ensure `DO_HOST`, `DO_USERNAME`, `DO_SSH_KEY` are correct.
-2.  **Server**: SSH in (`ssh root@...`) and check `docker ps` to see if the container is running.
-3.  **Logs**: Run `docker logs dura` on the server to see application logs.
-
-## Next Steps
-
-1.  **Verify**: Visit `https://dura.disruptiveiot.org` to see your new site!
-2.  **Future Phases**: 
-    - Phase 4: Infrastructure (Database, Auth)
-    - Phase 5: Core Features (Search, Workspace)
+## Next Steps (Recommended)
+1. Fix SSL by investigating nginx logs: `tail -f /var/log/nginx/error.log`
+2. Set up persistent volume for SQLite database
+3. Add automated database migrations to Dockerfile
