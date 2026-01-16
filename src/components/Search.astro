@@ -1,39 +1,61 @@
 ---
+
 ---
 
 <div id="search" class="ml-4"></div>
 
 <link href="/pagefind/pagefind-ui.css" rel="stylesheet" />
 <script is:inline>
-  window.addEventListener("load", () => {
-    // Dynamic import to avoid build-time errors if the file doesn't exist yet
-    // In dev, pagefind might not be available until a build is run
-    const script = document.createElement("script");
-    script.src = "/pagefind/pagefind-ui.js";
-    script.onload = () => {
-        new PagefindUI({ 
-            element: "#search", 
-            showSubResults: true,
-            showImages: false,
-            debounceTimeoutMs: 500
-        });
-    }
-    document.body.appendChild(script);
-  });
+    window.addEventListener("load", () => {
+        // Dynamic import to avoid build-time errors if the file doesn't exist yet
+        // In dev, pagefind might not be available until a build is run
+        const script = document.createElement("script");
+        script.src = "/pagefind/pagefind-ui.js";
+        script.onload = () => {
+            new PagefindUI({
+                element: "#search",
+                showSubResults: true,
+                showImages: false,
+                debounceTimeoutMs: 500,
+            });
+        };
+        document.body.appendChild(script);
+    });
 </script>
 
 <style is:global>
     /* Customizing Pagefind UI to match Dura theme */
     .pagefind-ui__search-input {
-        @apply bg-slate-50 border-slate-200 rounded-full px-4 py-2 text-sm focus:ring-2 focus:ring-amber-500 outline-none transition-all;
+        background-color: #f8fafc; /* slate-50 */
+        border: 1px solid #e2e8f0; /* slate-200 */
+        border-radius: 9999px;
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+        outline: none;
+        transition: all 0.15s ease;
+    }
+    .pagefind-ui__search-input:focus {
+        box-shadow: 0 0 0 2px #f59e0b; /* amber-500 */
     }
     .pagefind-ui__drawer {
-        @apply shadow-xl rounded-xl border border-slate-100 bg-white/95 backdrop-blur-md mt-2;
+        box-shadow:
+            0 20px 25px -5px rgb(0 0 0 / 0.1),
+            0 8px 10px -6px rgb(0 0 0 / 0.1);
+        border-radius: 0.75rem;
+        border: 1px solid #f1f5f9; /* slate-100 */
+        background-color: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(12px);
+        margin-top: 0.5rem;
     }
     .pagefind-ui__result-link {
-        @apply text-amber-900 font-bold hover:text-amber-700 !important;
+        color: #78350f !important; /* amber-900 */
+        font-weight: 700;
+    }
+    .pagefind-ui__result-link:hover {
+        color: #b45309 !important; /* amber-700 */
     }
     .pagefind-ui__result-excerpt {
-        @apply text-slate-500 text-sm;
+        color: #64748b; /* slate-500 */
+        font-size: 0.875rem;
     }
 </style>
