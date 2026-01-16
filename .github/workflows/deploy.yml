@@ -71,7 +71,9 @@ jobs:
               --name dura \
               --restart unless-stopped \
               -p 3000:4321 \
+              -v dura_data:/app/data \
               -e NODE_ENV=production \
+              -e DB_URL=/app/data/dura.db \
               ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
 
             # Cleanup

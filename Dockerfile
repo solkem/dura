@@ -33,7 +33,9 @@ COPY package*.json ./
 RUN npm install --omit=dev --legacy-peer-deps
 
 # Copy built assets from builder
+# Copy built assets from builder
 COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/drizzle ./drizzle
 
 # Expose port
 EXPOSE 4321
@@ -42,6 +44,11 @@ EXPOSE 4321
 ENV HOST=0.0.0.0
 ENV PORT=4321
 ENV NODE_ENV=production
+ENV DB_URL=/app/data/dura.db
+
+# Create data directory
+RUN mkdir -p /app/data
+VOLUME /app/data
 
 # Start the server
 CMD ["node", "./dist/server/entry.mjs"]

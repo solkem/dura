@@ -32,9 +32,9 @@
 - [ ] Consider regenerating SSL certificate
 
 ### Database Persistence (Priority: Medium)
-- [ ] Add volume mount to Dockerfile for `/app/data`
-- [ ] Set `DB_URL=/app/data/dura.db` environment variable
-- [ ] Add database migration/init script to container startup
+- [x] Add volume mount to Dockerfile for `/app/data`
+- [x] Set `DB_URL=/app/data/dura.db` environment variable
+- [x] Add database migration/init script to container startup
 
 ### Future Enhancements
 - [ ] Add Pagefind search index generation

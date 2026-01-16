@@ -21,3 +21,19 @@ try {
 }
 
 export const db = drizzle(sqlite, { schema });
+
+// Auto-migrate in production (or when DB_URL is set and we're not building)
+if (process.env.NODE_ENV === 'production' && !dbUrl.includes('local.db') && sqlite.prepare) {
+    try {
+        // Dynamic import to avoid build-time issues
+        import('drizzle-orm/better-sqlite3/migrator').then(({ migrate }) => {
+            console.log("Running migrations...");
+            migrate(db, { migrationsFolder: 'drizzle' });
+            console.log("Migrations complete.");
+        }).catch(err => {
+            console.error("Migration failed:", err);
+        });
+    } catch (e) {
+        console.warn("Skipping migration init", e);
+    }
+}
