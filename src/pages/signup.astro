@@ -1,5 +1,8 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { db } from "../db";
+import { invitations } from "../db/schema";
+import { eq } from "drizzle-orm";
 
 if (Astro.locals.user) {
 	return Astro.redirect("/");
@@ -10,15 +13,15 @@ let inviteValid = false;
 let inviteEmail = "";
 let inviteRole = "";
 
-// Validate invite token if provided
+// Validate invite token directly from database (SSR can't fetch its own API reliably)
 if (inviteToken) {
     try {
-        const response = await fetch(`${Astro.url.origin}/api/invite?token=${inviteToken}`);
-        if (response.ok) {
-            const data = await response.json();
-            inviteValid = data.valid;
-            inviteEmail = data.email || "";
-            inviteRole = data.role || "";
+        const invite = await db.select().from(invitations).where(eq(invitations.token, inviteToken)).get();
+        
+        if (invite && !invite.usedAt && invite.expiresAt > Date.now()) {
+            inviteValid = true;
+            inviteEmail = invite.email;
+            inviteRole = invite.role;
         }
     } catch (e) {
         console.error("Invite validation error:", e);
