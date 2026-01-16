@@ -1,6 +1,8 @@
 import type { APIRoute } from "astro";
 import { lucia } from "../../auth";
 
+export const prerender = false;
+
 export const POST: APIRoute = async (context) => {
     if (!context.locals.session) {
         return new Response(null, {

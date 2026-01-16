@@ -3,6 +3,8 @@ import { db } from "../../db";
 import { userStars } from "../../db/schema";
 import { eq, and } from "drizzle-orm";
 
+export const prerender = false;
+
 export const POST: APIRoute = async (context) => {
     if (!context.locals.user) {
         return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401 });

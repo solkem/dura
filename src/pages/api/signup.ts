@@ -6,6 +6,8 @@ import { db } from "../../db";
 import { users } from "../../db/schema";
 import { SqliteError } from "better-sqlite3";
 
+export const prerender = false;
+
 export const POST: APIRoute = async (context) => {
     const formData = await context.request.formData();
     const username = formData.get("username");

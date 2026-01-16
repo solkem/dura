@@ -3,6 +3,8 @@ import { db } from "../../db";
 import { userProgress } from "../../db/schema";
 import { eq, and } from "drizzle-orm";
 
+export const prerender = false;
+
 // POST /api/progress - Update progress
 export const POST: APIRoute = async (context) => {
     if (!context.locals.user) {
