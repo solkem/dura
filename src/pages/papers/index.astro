@@ -9,44 +9,66 @@ const papers = await getCollection("papers");
     <div class="max-w-4xl mx-auto mt-12 mb-20 px-4">
         <h1 class="text-4xl font-bold text-stone-900 mb-4">Research Papers</h1>
         <p class="text-xl text-stone-600 mb-12 max-w-2xl">
-             foundational research and academic papers powering the Midnight ecosystem.
+            foundational research and academic papers powering the Midnight
+            ecosystem.
         </p>
 
         <div class="grid grid-cols-1 gap-6">
-            {papers.map(paper => (
-                <div class="group relative bg-white border border-stone-200 rounded-2xl p-8 hover:shadow-lg transition-all hover:border-amber-200">
-                    <div class="flex justify-between items-start">
-                        <div class="flex-1">
-                            <h2 class="text-2xl font-bold text-stone-900 mb-3 group-hover:text-amber-700 transition-colors">
-                                <a href={`/papers/${paper.slug}`}>
-                                    <span class="absolute inset-0"></span>
-                                    {paper.data.title}
-                                </a>
-                            </h2>
-                            <p class="text-stone-600 mb-6 leading-relaxed">
-                                {paper.data.abstract}
-                            </p>
-                            <div class="flex flex-wrap gap-4 text-sm font-medium text-stone-500">
-                                <div class="flex items-center gap-1">
-                                    <span class="font-bold text-stone-400">Authors:</span>
-                                    <span>{paper.data.authors.join(", ")}</span>
-                                </div>
-                                {paper.data.year && (
+            {
+                papers.map((paper) => (
+                    <div class="group relative bg-white border border-stone-200 rounded-2xl p-8 hover:shadow-lg transition-all hover:border-amber-200">
+                        <div class="flex justify-between items-start">
+                            <div class="flex-1">
+                                <h2 class="text-2xl font-bold text-stone-900 mb-3 group-hover:text-amber-700 transition-colors">
+                                    <a href={`/papers/${paper.id}`}>
+                                        <span class="absolute inset-0" />
+                                        {paper.data.title}
+                                    </a>
+                                </h2>
+                                <p class="text-stone-600 mb-6 leading-relaxed">
+                                    {paper.data.abstract}
+                                </p>
+                                <div class="flex flex-wrap gap-4 text-sm font-medium text-stone-500">
                                     <div class="flex items-center gap-1">
-                                        <span class="font-bold text-stone-400">Year:</span>
-                                        <span>{paper.data.year}</span>
+                                        <span class="font-bold text-stone-400">
+                                            Authors:
+                                        </span>
+                                        <span>
+                                            {paper.data.authors
+                                                .map((a) => a.name)
+                                                .join(", ")}
+                                        </span>
                                     </div>
-                                )}
+                                    {paper.data.year && (
+                                        <div class="flex items-center gap-1">
+                                            <span class="font-bold text-stone-400">
+                                                Year:
+                                            </span>
+                                            <span>{paper.data.year}</span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                            <div class="ml-4 text-stone-300 group-hover:translate-x-1 transition-transform">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    class="h-6 w-6"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M14 5l7 7m0 0l-7 7m7-7H3"
+                                    />
+                                </svg>
                             </div>
                         </div>
-                        <div class="ml-4 text-stone-300 group-hover:translate-x-1 transition-transform">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                            </svg>
-                        </div>
                     </div>
-                </div>
-            ))}
+                ))
+            }
         </div>
     </div>
 </BaseLayout>
