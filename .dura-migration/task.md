@@ -14,10 +14,10 @@
 - [x] Consolidated certificates with `certbot --expand`
 - [x] Created separate nginx server block for dura subdomain
 - [x] Removed duplicate/conflicting nginx configs
-- [ ] **SSL still intermittent** - needs further investigation
+- [x] SSL verified working (Browser Access Confirmed)
 
 ### Database & Auth
-- [x] SQLite database initialized on server (`/app/local.db`)
+- [x] SQLite database initialized on server (`/app/data/dura.db`)
 - [x] User, session, user_progress, user_stars tables created
 - [x] Signup flow verified working
 - [x] Login flow verified working
