@@ -1,6 +1,6 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import 'dotenv/config';
 
+// Note: In production, GOOGLE_AI_API_KEY is passed via Docker -e flag
 // Lazy initialize Gemini client to ensure env is loaded
 let genAI: GoogleGenerativeAI | null = null;
 

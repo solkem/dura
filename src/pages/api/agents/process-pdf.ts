@@ -6,13 +6,18 @@ import { synthesizePaper } from "../../../agents/synthesizer";
 export const prerender = false;
 
 export const POST: APIRoute = async (context) => {
+    console.log("[process-pdf] Request received");
+
     // Check authentication
     if (!context.locals.user) {
+        console.log("[process-pdf] Unauthorized - no user");
         return new Response(JSON.stringify({ error: "Unauthorized" }), {
             status: 401,
             headers: { "Content-Type": "application/json" }
         });
     }
+
+    console.log("[process-pdf] User:", context.locals.user.username);
 
     try {
         const formData = await context.request.formData();
