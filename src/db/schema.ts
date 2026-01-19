@@ -1,4 +1,4 @@
-import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
+import { sqliteTable, text, integer, real } from 'drizzle-orm/sqlite-core';
 
 export const users = sqliteTable('user', {
     id: text('id').primaryKey(),
@@ -42,3 +42,68 @@ export const invitations = sqliteTable('invitation', {
     usedAt: integer('used_at') // null if unused
 });
 
+// ============================================================================
+// AGENTIC AI TABLES
+// ============================================================================
+
+/**
+ * Papers table - stores paper metadata + agent-generated fields
+ */
+export const papers = sqliteTable('papers', {
+    id: text('id').primaryKey(),
+    title: text('title').notNull(),
+    authors: text('authors'),              // JSON array of author objects
+    year: integer('year'),
+    venue: text('venue'),
+    doi: text('doi'),
+    arxivId: text('arxiv_id'),
+    abstract: text('abstract'),
+    bibtex: text('bibtex'),
+    tags: text('tags'),                    // JSON array
+    domain: text('domain'),
+
+    // Agent-generated fields (Curator)
+    relevanceScore: real('relevance_score'),
+    difficulty: integer('difficulty'),      // 1-5
+    domainTags: text('domain_tags'),       // JSON array
+    ecosystemTags: text('ecosystem_tags'), // JSON array: edgechain, msingi, ndani
+    curatorStatus: text('curator_status').default('pending'), // pending, approved, rejected, needs-review
+    curatorNotes: text('curator_notes'),
+
+    // Agent-generated fields (Synthesizer)
+    summaryOneLiner: text('summary_one_liner'),
+    summaryParagraph: text('summary_paragraph'),
+    summaryNyakupfuya: text('summary_nyakupfuya'),
+    prerequisites: text('prerequisites'),   // JSON array of paper IDs
+
+    // Metadata
+    processedAt: text('processed_at'),
+    createdAt: text('created_at').default(new Date().toISOString())
+});
+
+/**
+ * Paper relations - knowledge graph edges between papers
+ */
+export const paperRelations = sqliteTable('paper_relations', {
+    id: text('id').primaryKey(),
+    sourcePaperId: text('source_paper_id').references(() => papers.id),
+    targetPaperId: text('target_paper_id').references(() => papers.id),
+    relationship: text('relationship'),     // builds-upon, implements, extends, enables
+    strength: real('strength'),
+    explanation: text('explanation'),
+    createdAt: text('created_at').default(new Date().toISOString())
+});
+
+/**
+ * Agent logs - tracks API usage for cost monitoring
+ */
+export const agentLogs = sqliteTable('agent_logs', {
+    id: text('id').primaryKey(),
+    paperId: text('paper_id'),
+    agent: text('agent'),                   // curator, synthesizer, tutor, connector
+    model: text('model'),
+    tokensIn: integer('tokens_in'),
+    tokensOut: integer('tokens_out'),
+    latencyMs: integer('latency_ms'),
+    createdAt: text('created_at').default(new Date().toISOString())
+});

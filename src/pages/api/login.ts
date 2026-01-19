@@ -18,48 +18,49 @@ export const POST: APIRoute = async (context) => {
         username.length > 31 ||
         !/^[a-z0-9_-]+$/.test(username)
     ) {
-        return new Response(JSON.stringify({ error: "Invalid username" }), {
-            status: 400
+        return new Response(null, {
+            status: 302,
+            headers: { Location: "/login?error=Invalid%20username" }
         });
     }
     if (typeof password !== "string" || password.length < 6 || password.length > 255) {
-        return new Response(JSON.stringify({ error: "Invalid password" }), {
-            status: 400
+        return new Response(null, {
+            status: 302,
+            headers: { Location: "/login?error=Invalid%20password" }
         });
     }
 
     const existingUser = await db.select().from(users).where(eq(users.username, username)).get();
     if (!existingUser) {
-        return new Response(
-            JSON.stringify({
-                error: "Incorrect username or password"
-            }),
-            {
-                status: 400
-            }
-        );
+        return new Response(null, {
+            status: 302,
+            headers: { Location: "/login?error=Incorrect%20username%20or%20password" }
+        });
     }
 
     const validPassword = await new Argon2id().verify(existingUser.password_hash, password);
     if (!validPassword) {
-        return new Response(
-            JSON.stringify({
-                error: "Incorrect username or password"
-            }),
-            {
-                status: 400
-            }
-        );
+        return new Response(null, {
+            status: 302,
+            headers: { Location: "/login?error=Incorrect%20username%20or%20password" }
+        });
     }
 
     const session = await lucia.createSession(existingUser.id, {});
     const sessionCookie = lucia.createSessionCookie(session.id);
-    context.cookies.set(sessionCookie.name, sessionCookie.value, sessionCookie.attributes);
+    const serializedCookie = sessionCookie.serialize();
+
+    // Log for debugging
+    console.log('Session created:', session.id);
+    console.log('Cookie:', sessionCookie.name, '=', sessionCookie.value);
+    console.log('Cookie attributes:', sessionCookie.attributes);
+    console.log('Serialized Set-Cookie:', serializedCookie);
 
     return new Response(null, {
         status: 302,
         headers: {
-            Location: "/"
+            Location: "/",
+            "Set-Cookie": serializedCookie
         }
     });
 };

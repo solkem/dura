@@ -1,42 +1,150 @@
 # CLAUDE.md — Dura: The Knowledge Granary
 
+> ## 📚 CORE DOCUMENTATION
+> 
+> | Document | Purpose |
+> |----------|---------|
+> | **→ CLAUDE.md** | Technical implementation & architecture |
+> | [CLAUDE-Citizen-Scientist.md](./CLAUDE-Citizen-Scientist.md) | Philosophy, BSR inspiration, Nyakupfuya test |
+> | [DURA_AGENTIC_MIGRATION.md](./DURA_AGENTIC_MIGRATION.md) | 5-phase agentic AI roadmap |
+> 
+> *Read all three. The technical serves the philosophical.*
+
 **Last Updated:** January 2026  
-**Status:** Rebranding & Migration Phase  
+**Status:** Phase 1 — Agentic AI Migration  
 **Lead:** Solomon Hopewell Kembo (@solkem)  
 **Parent Ecosystem:** baeIoT (Blockchain × AI × Edge × IoT)
 
 ---
 
-## ⚠️ MIGRATION CONTEXT
+## 🚀 CURRENT FOCUS: AGENTIC AI MIGRATION
 
-This document guides the transformation of the **existing** `edgechain-msingi-ndani` codebase into **Dura**.
+> **See:** `DURA_AGENTIC_MIGRATION.md` for full technical plan
 
-### Current State (What Exists NOW)
+Dura is evolving from a static learning platform to an **AI-powered knowledge system** with 4 agents that curate, synthesize, and teach.
+
+### The 4 Agents
+
+| Agent | Purpose | Status |
+|-------|---------|--------|
+| **Curator** | Evaluates papers for relevance, difficulty, ecosystem fit | 🔨 Building |
+| **Synthesizer** | Generates summaries (one-liner, paragraph, nyakupfuya) | 🔨 Building |
+| **Tutor** | Answers questions, checks prerequisites, suggests paths | ⏳ Phase 3 |
+| **Connector** | Localizes explanations for Odzi/Mbare contexts | ⏳ Phase 3 |
+
+### AI Provider & Costs
+
+| Provider | Model | Cost |
+|----------|-------|------|
+| **Google Gemini** | gemini-2.0-flash-exp | **$0** (free tier) |
+
+**What is a token?**
+- 1 token ≈ 4 characters ≈ ¾ of a word
+- Paper abstract (~200 words) ≈ 270 tokens
+
+**Capacity vs Usage:**
+
+| Metric | Value |
+|--------|-------|
+| Free tier limit | 1,000,000 tokens/day |
+| Per paper (curator + synthesizer) | ~1,000-2,000 tokens |
+| **Maximum capacity** | ~500-1,000 papers/day |
+| **Realistic usage** | 5-10 papers/week |
+| **Usage of free tier** | <1% |
+
+> **Bottom line:** Processing papers = **$0 cost** for Dura's use case.
+
+**Curator Flow:**
+```
+User clicks "Curate Paper"
+        ↓
+POST /api/agents/curate { title, abstract }
+        ↓
+Dura server → Gemini API (with CURATOR_PROMPT)
+        ↓
+Gemini returns JSON { relevanceScore, difficulty, tags, status }
+        ↓
+Save to SQLite + log usage → Display to user
+```
+
+> Requires `GOOGLE_AI_API_KEY` in `.env` — get it from [aistudio.google.com/apikey](https://aistudio.google.com/apikey)
+
+### Migration Phases
+
+| Phase | Weeks | Focus | Status |
+|-------|-------|-------|--------|
+| **1** | 1-4 | Curator + Synthesizer + paperdb | 🔨 Active |
+| **2** | 5-8 | Knowledge graph + disruptiveiot pipeline | ⏳ Pending |
+| **3** | 9-12 | Tutor + Connector (cloud) | ⏳ Pending |
+| **4** | 13-16 | Edge deployment (DeepSeek in Odzi) | ⏳ Pending |
+| **5** | 17-20 | Expansion + graduation | ⏳ Pending |
+
+### Current Stack (Actual)
+
+| Component | Technology | Notes |
+|-----------|------------|-------|
+| Platform | Astro 4.x | ✅ Working |
+| Database | SQLite + Drizzle | ✅ Working |
+| Auth | Lucia | ✅ Working |
+| Search | Pagefind | ✅ Working |
+| Hosting | Docker + DigitalOcean | ✅ Working |
+| CI/CD | GitHub Actions | ✅ Working |
+| AI Agents | Google Gemini | 🔨 Building |
+
+### New Files (Phase 1)
+
+```
+src/agents/                    # NEW
+├── index.ts                   # Exports
+├── curator/
+│   ├── index.ts               # curatePaper()
+│   └── prompt.ts              # System prompt
+├── synthesizer/
+│   ├── index.ts               # synthesizePaper()
+│   └── prompt.ts              # Nyakupfuya test
+└── utils/
+    ├── gemini.ts              # Gemini API client
+    └── logger.ts              # Cost tracking
+
+src/pages/api/agents/          # NEW
+├── curate.ts                  # POST /api/agents/curate
+├── synthesize.ts              # POST /api/agents/synthesize
+└── process-paper.ts           # Full pipeline
+```
+
+### Database Additions (Phase 1)
+
+```sql
+-- Extend papers table with agent metadata
+ALTER TABLE papers ADD COLUMN relevance_score REAL;
+ALTER TABLE papers ADD COLUMN difficulty INTEGER;
+ALTER TABLE papers ADD COLUMN curator_status TEXT;
+ALTER TABLE papers ADD COLUMN summary_one_liner TEXT;
+ALTER TABLE papers ADD COLUMN summary_nyakupfuya TEXT;
+-- ...
+
+-- Knowledge graph edges
+CREATE TABLE paper_relations (...);
+
+-- Cost tracking
+CREATE TABLE agent_logs (...);
+```
+
+---
+
+## ✅ COMPLETED: Initial Platform Migration
+
+> Original migration from `edgechain-msingi-ndani` to `dura` is **complete**.
+
+### Achieved State
 
 | Attribute | Current Value |
 |-----------|---------------|
-| **Repo** | `solkem/edgechain-msingi-ndani` |
-| **Live Site** | https://edgechain-msingi-ndani.fly.dev/ |
-| **Branding** | "Midnight Learning Hub" / "🌙 Midnight Learning" |
-| **Stack** | Astro 4.x + React 18 + MDX + Tailwind CSS |
-| **CMS** | Decap CMS (Git-backed) at `/admin` |
-| **Hosting** | Fly.io (primary), Vercel config also exists |
-| **Auth** | GitHub OAuth (for CMS only) |
-| **Content** | 3 concepts (zkp, federated-learning, trustless-architecture), 3 project pages |
-| **Features** | Concept cards, project badges, FAQ, request-access page |
-
-### Target State (What We're Building)
-
-| Attribute | Target Value |
-|-----------|--------------|
-| **Repo** | `solkem/dura` (rename or new repo) |
-| **Domain** | dura.dev |
-| **Branding** | "Dura — The Knowledge Granary" |
-| **Stack** | Astro 4.x + React 18 + MDX + Tailwind + **Hono API** + **PostgreSQL** |
-| **CMS** | Decap CMS (keep) + Custom admin for premium |
-| **Hosting** | Fly.io |
-| **Auth** | Lucia Auth (full user accounts, not just CMS) |
-| **Features** | Search, progress tracking, paper management, collaboration, payments |
+| **Repo** | `solkem/dura` |
+| **Live Site** | dura.disruptiveiot.org |
+| **Stack** | Astro 4.x + React 18 + SQLite + Drizzle + Lucia |
+| **Auth** | Lucia (username/password + invitations) |
+| **Features** | Progress tracking, paper starring, search |
 
 ---
 

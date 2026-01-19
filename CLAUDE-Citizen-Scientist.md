@@ -1,5 +1,15 @@
 # Dura Citizen Scientist Strategy
 
+> ## 📚 CORE DOCUMENTATION
+> 
+> | Document | Purpose |
+> |----------|---------|
+> | [CLAUDE.md](./CLAUDE.md) | Technical implementation & architecture |
+> | **→ CLAUDE-Citizen-Scientist.md** | Philosophy, BSR inspiration, Nyakupfuya test |
+> | [DURA_AGENTIC_MIGRATION.md](./DURA_AGENTIC_MIGRATION.md) | 5-phase agentic AI roadmap |
+> 
+> *The philosophical foundation. Read this first to understand WHY.*
+
 ## Context
 
 This document captures strategic decisions made during auth design discussions for Dura's public-facing "Citizen Scientist" side. Use this as foundation for subsequent technical implementation conversations.

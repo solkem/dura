@@ -1,0 +1,51 @@
+---
+// Debug page to test cookie functionality
+export const prerender = false;
+
+// Set a simple test cookie
+Astro.cookies.set("test_cookie", "hello_world", {
+    path: "/",
+    httpOnly: false, // So we can see it in document.cookie
+    maxAge: 3600,
+});
+
+// Check if we can read the auth_session cookie
+const authCookie = Astro.cookies.get("auth_session")?.value;
+const testCookie = Astro.cookies.get("test_cookie")?.value;
+---
+
+<html>
+    <head><title>Cookie Debug</title></head>
+    <body
+        style="font-family: system-ui; padding: 2rem; background: #1a1a2e; color: white;"
+    >
+        <h1>🍪 Cookie Debug Page</h1>
+
+        <h2>Server-side Cookie Check:</h2>
+        <p><strong>auth_session:</strong> {authCookie || "❌ Not found"}</p>
+        <p>
+            <strong>test_cookie:</strong>
+            {testCookie || "❌ Not found (just set it, refresh to see)"}
+        </p>
+
+        <h2>Client-side Cookie Check:</h2>
+        <pre id="client-cookies"></pre>
+
+        <h2>Logged in status:</h2>
+        <p>
+            {
+                Astro.locals.user
+                    ? `✅ Logged in as ${Astro.locals.user.username}`
+                    : "❌ Not logged in"
+            }
+        </p>
+
+        <hr />
+        <p><a href="/login" style="color: #fbbf24;">Go to Login</a></p>
+
+        <script>
+            document.getElementById("client-cookies").textContent =
+                document.cookie || "(no cookies visible to JavaScript)";
+        </script>
+    </body>
+</html>

@@ -1,68 +1,74 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 
+// Handle GET request - show form or redirect if already logged in
 if (Astro.locals.user) {
-	return Astro.redirect("/");
+    return Astro.redirect("/");
 }
+
+// Get error from URL if login failed
+const url = new URL(Astro.request.url);
+const error = url.searchParams.get("error");
 ---
 
 <BaseLayout title="Sign in | Dura">
-	<div class="max-w-md mx-auto mt-20 mb-20 p-8 bg-white border border-stone-200 rounded-2xl shadow-sm">
-		<h1 class="text-3xl font-bold text-stone-900 mb-6 text-center">Welcome back</h1>
-		
-		<form method="post" action="/api/login" class="space-y-4">
-			<div>
-				<label for="username" class="block text-sm font-medium text-stone-700 mb-1">Username</label>
-				<input 
-                    name="username" 
-                    id="username" 
-                    required 
+    <div
+        class="max-w-md mx-auto mt-20 mb-20 p-8 bg-white border border-stone-200 rounded-2xl shadow-sm"
+    >
+        <h1 class="text-3xl font-bold text-stone-900 mb-6 text-center">
+            Welcome back
+        </h1>
+
+        <!-- Native form submission - no JavaScript interception -->
+        <form method="post" action="/api/login" class="space-y-4">
+            <div>
+                <label
+                    for="username"
+                    class="block text-sm font-medium text-stone-700 mb-1"
+                    >Username</label
+                >
+                <input
+                    name="username"
+                    id="username"
+                    required
                     class="w-full px-4 py-2 border border-stone-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none transition-all"
                 />
-			</div>
-			<div>
-				<label for="password" class="block text-sm font-medium text-stone-700 mb-1">Password</label>
-				<input 
-                    type="password" 
-                    name="password" 
-                    id="password" 
-                    required 
+            </div>
+            <div>
+                <label
+                    for="password"
+                    class="block text-sm font-medium text-stone-700 mb-1"
+                    >Password</label
+                >
+                <input
+                    type="password"
+                    name="password"
+                    id="password"
+                    required
                     class="w-full px-4 py-2 border border-stone-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none transition-all"
                 />
-			</div>
-			
-            <button class="w-full bg-stone-900 text-white font-bold py-3 rounded-lg hover:bg-stone-800 transition-colors mt-6">Sign in</button>
-            <p id="form-error" class="text-red-600 text-sm mt-4 text-center hidden"></p>
-		</form>
+            </div>
+
+            {
+                error && (
+                    <p class="text-red-600 text-sm text-center">
+                        {decodeURIComponent(error)}
+                    </p>
+                )
+            }
+
+            <button
+                type="submit"
+                class="w-full bg-stone-900 text-white font-bold py-3 rounded-lg hover:bg-stone-800 transition-colors mt-6"
+                >Sign in</button
+            >
+        </form>
 
         <div class="mt-6 text-center text-sm text-stone-600">
-            Don't have an account? <a href="/signup" class="text-amber-700 font-bold hover:underline">Create one</a>
+            Don't have an account? <a
+                href="/signup"
+                class="text-amber-700 font-bold hover:underline">Create one</a
+            >
         </div>
-	</div>
-
-    <script>
-        const errorMessageElement = document.getElementById("form-error")!;
-    
-        document.forms[0].addEventListener("submit", async (e) => {
-            e.preventDefault();
-            errorMessageElement.innerText = "";
-            const formElement = e.target as HTMLFormElement;
-            const response = await fetch(formElement.action, {
-                method: formElement.method,
-                body: new FormData(formElement)
-            });
-            if (response.ok) {
-                window.location.href = "/";
-            } else {
-                try {
-                     const data = await response.json();
-                     errorMessageElement.innerText = data.error;
-                     errorMessageElement.classList.remove("hidden");
-                } catch {
-                     errorMessageElement.innerText = "An error occurred";
-                     errorMessageElement.classList.remove("hidden");
-                }
-            }
-        });
-    </script>
+    </div>
 </BaseLayout>
