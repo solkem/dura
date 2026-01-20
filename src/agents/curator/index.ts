@@ -9,13 +9,15 @@ export interface CuratorInput {
 }
 
 export interface CuratorOutput {
-    relevanceScore: number;      // 0-1
+    relevanceScore: number;           // 0-1: Domain relevance
+    accessibilityScore: number;       // 0-1: Citizen Scientist accessibility
     difficulty: 1 | 2 | 3 | 4 | 5;
     domainTags: string[];
-    ecosystemTags: string[];     // ["edgechain", "msingi", "ndani"]
+    ecosystemTags: string[];          // ["edgechain", "msingi", "ndani"]
     keyContributions: string[];
     curatorStatus: 'approved' | 'rejected' | 'needs-review';
     curatorNotes: string;
+    nyakupfuyaSummary?: string;       // Required for approved papers
 }
 
 /**

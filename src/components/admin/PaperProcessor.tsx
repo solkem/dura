@@ -16,11 +16,13 @@ interface ProcessResult {
   extracted?: ExtractedInfo;
   curator?: {
     relevanceScore: number;
+    accessibilityScore: number;
     difficulty: number;
     domainTags: string[];
     ecosystemTags: string[];
     curatorStatus: string;
     curatorNotes: string;
+    nyakupfuyaSummary?: string;
   };
   synthesizer?: {
     summaries: {
@@ -257,6 +259,9 @@ export function PaperProcessor() {
                     <strong>Relevance:</strong> {(result.curator.relevanceScore * 100).toFixed(0)}%
                   </span>
                   <span className="stat">
+                    <strong>Accessibility:</strong> {((result.curator.accessibilityScore || 0) * 100).toFixed(0)}%
+                  </span>
+                  <span className="stat">
                     <strong>Difficulty:</strong> {result.curator.difficulty}/5
                   </span>
                   <span className="stat">
@@ -272,6 +277,14 @@ export function PaperProcessor() {
                   ))}
                 </div>
                 <p className="notes">{result.curator.curatorNotes}</p>
+
+                {/* Nyakupfuya Summary - from Curator (integrated approach) */}
+                {result.curator.nyakupfuyaSummary && (
+                  <div className="summary nyakupfuya">
+                    <strong>🐄 Nyakupfuya (Livestock Keeper Test):</strong>
+                    <p>{result.curator.nyakupfuyaSummary}</p>
+                  </div>
+                )}
               </div>
 
               <div className="section summaries-section">
@@ -287,10 +300,13 @@ export function PaperProcessor() {
                   <p>{result.synthesizer.summaries.paragraph}</p>
                 </div>
 
-                <div className="summary nyakupfuya">
-                  <strong>🐄 Nyakupfuya (Livestock Keeper Test):</strong>
-                  <p>{result.synthesizer.summaries.nyakupfuya}</p>
-                </div>
+                {/* Fallback to Synthesizer's nyakupfuya if Curator didn't provide one */}
+                {!result.curator.nyakupfuyaSummary && result.synthesizer.summaries.nyakupfuya && (
+                  <div className="summary nyakupfuya">
+                    <strong>🐄 Nyakupfuya (Livestock Keeper Test):</strong>
+                    <p>{result.synthesizer.summaries.nyakupfuya}</p>
+                  </div>
+                )}
               </div>
 
               {result.synthesizer.relatedPapers.length > 0 && (
