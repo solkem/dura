@@ -1,6 +1,17 @@
+/**
+ * Synthesizer Agent
+ * 
+ * Generates summaries and finds relationships between papers.
+ * Uses context caching to reduce API costs.
+ */
+
+import { generateJSONWithCache } from '../utils/cache';
 import { generateJSON } from '../utils/gemini';
 import { logAgentCall, startTimer } from '../utils/logger';
 import { SYNTHESIZER_PROMPT } from './prompt';
+
+// Feature flag: Enable context caching
+const USE_CACHING = true;
 
 export interface SynthesizerInput {
     paper: {
@@ -20,7 +31,7 @@ export interface SynthesizerOutput {
     summaries: {
         oneLiner: string;       // <100 chars, punchy
         paragraph: string;      // 2-3 sentences
-        nyakupfuya: string;     // Simplified for rural learners
+        nyakupfuya: string;     // Simplified for rural learners (fallback if Curator didn't provide)
     };
     relatedPapers: Array<{
         paperId: string;
@@ -33,6 +44,8 @@ export interface SynthesizerOutput {
 
 /**
  * Synthesize a paper - generate summaries and find relationships
+ * 
+ * Uses context caching when enabled for cost efficiency
  */
 export async function synthesizePaper(input: SynthesizerInput): Promise<SynthesizerOutput> {
     const getElapsed = startTimer();
@@ -53,10 +66,29 @@ ${input.existingPapers.length > 0
 
 Generate summaries (especially a good nyakupfuya!) and identify any relationships with existing papers.`;
 
-    const { result, usage } = await generateJSON<SynthesizerOutput>(
-        SYNTHESIZER_PROMPT,
-        userPrompt
-    );
+    let result: SynthesizerOutput;
+    let usage: { tokensIn: number; tokensOut: number; cachedTokens?: number };
+
+    if (USE_CACHING) {
+        // Use context caching
+        const response = await generateJSONWithCache<SynthesizerOutput>(
+            'synthesizer',
+            SYNTHESIZER_PROMPT,
+            userPrompt
+        );
+        result = response.result;
+        usage = response.usage;
+
+        console.log(`[Synthesizer] Cache hit: ${response.usage.cachedTokens} tokens from cache`);
+    } else {
+        // Traditional approach
+        const response = await generateJSON<SynthesizerOutput>(
+            SYNTHESIZER_PROMPT,
+            userPrompt
+        );
+        result = response.result;
+        usage = response.usage;
+    }
 
     // Log the API call
     await logAgentCall({
