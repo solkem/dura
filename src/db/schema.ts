@@ -107,3 +107,34 @@ export const agentLogs = sqliteTable('agent_logs', {
     latencyMs: integer('latency_ms'),
     createdAt: text('created_at').default(new Date().toISOString())
 });
+
+// ============================================================================
+// NYAKUPFUYA MEMORY SYSTEM
+// ============================================================================
+
+/**
+ * Memories table - stores learned patterns from agent interactions
+ * Human-in-the-loop: all memories start as 'pending' and require approval
+ */
+export const memories = sqliteTable('memories', {
+    id: text('id').primaryKey(),
+    type: text('type').notNull(),           // episodic, semantic, procedural, reflective
+    content: text('content').notNull(),     // The learned pattern/observation
+    confidence: real('confidence').notNull().default(0.5),
+    status: text('status').notNull().default('pending'), // pending, validated, rejected, archived
+
+    // Evidence chain
+    sourceAgent: text('source_agent'),      // curator, synthesizer, tutor, connector
+    evidence: text('evidence'),             // JSON: { paperIds: [], observations: [] }
+
+    // Approval workflow
+    reviewedBy: text('reviewed_by').references(() => users.id),
+    reviewedAt: text('reviewed_at'),
+    reviewNotes: text('review_notes'),
+
+    // Metadata
+    createdAt: text('created_at').default(new Date().toISOString()),
+    lastUsedAt: text('last_used_at'),       // For memory decay tracking
+    useCount: integer('use_count').default(0)
+});
+
