@@ -74,7 +74,7 @@ function getOrCreateModel(cacheName: string, systemInstruction: string): Generat
     console.log(`[Cache] Creating new model instance: ${cacheName}`);
 
     const model = client.getGenerativeModel({
-        model: 'gemini-2.0-flash',
+        model: 'gemini-2.5-flash-lite',
         generationConfig: {
             responseMimeType: 'application/json',
             temperature: 0.7,

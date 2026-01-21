@@ -89,7 +89,7 @@ ${input.fullText ? `Full text excerpt: ${input.fullText.slice(0, 2000)}...` : ''
     // Log the API call
     await logAgentCall({
         agent: 'curator',
-        model: 'gemini-2.0-flash-exp',
+        model: 'gemini-2.5-flash-lite',
         tokensIn: usage.tokensIn,
         tokensOut: usage.tokensOut,
         latencyMs: getElapsed(),

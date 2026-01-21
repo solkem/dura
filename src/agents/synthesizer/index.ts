@@ -105,7 +105,7 @@ Generate summaries (especially a good nyakupfuya!) and identify any relationship
     await logAgentCall({
         paperId: input.paper.id,
         agent: 'synthesizer',
-        model: 'gemini-2.0-flash-exp',
+        model: 'gemini-2.5-flash-lite',
         tokensIn: usage.tokensIn,
         tokensOut: usage.tokensOut,
         latencyMs: getElapsed(),

@@ -30,7 +30,7 @@ export async function generateJSON<T>(
   userPrompt: string
 ): Promise<{ result: T; usage: { tokensIn: number; tokensOut: number } }> {
   const model = getGenAI().getGenerativeModel({
-    model: 'gemini-2.0-flash',
+    model: 'gemini-2.5-flash-lite',
     generationConfig: {
       responseMimeType: 'application/json',
       temperature: 0.7,
@@ -64,7 +64,7 @@ export async function generateText(
   userPrompt: string
 ): Promise<{ result: string; usage: { tokensIn: number; tokensOut: number } }> {
   const model = getGenAI().getGenerativeModel({
-    model: 'gemini-2.0-flash',
+    model: 'gemini-2.5-flash-lite',
     generationConfig: {
       temperature: 0.7,
     },
