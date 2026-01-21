@@ -30,6 +30,18 @@ interface ProcessResult {
       paragraph: string;
       nyakupfuya: string;
     };
+    keyConcepts?: Array<{
+      term: string;
+      simpleDefinition: string;
+      analogy: string;
+      whyItMatters: string;
+    }>;
+    practicalImplications?: string[];
+    learningPath?: {
+      prerequisites: string[];
+      nextSteps: string[];
+      questions: string[];
+    };
     relatedPapers: Array<{
       paperId: string;
       relationship: string;
@@ -303,11 +315,82 @@ export function PaperProcessor() {
                 {/* Fallback to Synthesizer's nyakupfuya if Curator didn't provide one */}
                 {!result.curator.nyakupfuyaSummary && result.synthesizer.summaries.nyakupfuya && (
                   <div className="summary nyakupfuya">
-                    <strong>🐄 Nyakupfuya (Livestock Keeper Test):</strong>
-                    <p>{result.synthesizer.summaries.nyakupfuya}</p>
+                    <strong>🐄 Nyakupfuya (Livestock Keeper Explanation):</strong>
+                    <div className="nyakupfuya-text">{result.synthesizer.summaries.nyakupfuya}</div>
                   </div>
                 )}
               </div>
+
+              {/* Key Concepts - Deep dive into technical terms */}
+              {result.synthesizer.keyConcepts && result.synthesizer.keyConcepts.length > 0 && (
+                <div className="section concepts-section">
+                  <h4>🔑 Key Concepts Explained</h4>
+                  {result.synthesizer.keyConcepts.map((concept, idx) => (
+                    <div key={idx} className="concept-card">
+                      <div className="concept-term">{concept.term}</div>
+                      <div className="concept-definition">{concept.simpleDefinition}</div>
+                      <div className="concept-analogy">
+                        <span className="analogy-icon">🌾</span> {concept.analogy}
+                      </div>
+                      <div className="concept-importance">
+                        <em>Why it matters:</em> {concept.whyItMatters}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Practical Implications */}
+              {result.synthesizer.practicalImplications && result.synthesizer.practicalImplications.length > 0 && (
+                <div className="section implications-section">
+                  <h4>💡 Practical Implications</h4>
+                  <ul className="implications-list">
+                    {result.synthesizer.practicalImplications.map((impl, idx) => (
+                      <li key={idx}>{impl}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Learning Path */}
+              {result.synthesizer.learningPath && (
+                <div className="section learning-section">
+                  <h4>📚 Learning Path</h4>
+
+                  {result.synthesizer.learningPath.prerequisites?.length > 0 && (
+                    <div className="learning-block">
+                      <strong>📖 Before reading this:</strong>
+                      <ul>
+                        {result.synthesizer.learningPath.prerequisites.map((prereq, idx) => (
+                          <li key={idx}>{prereq}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {result.synthesizer.learningPath.nextSteps?.length > 0 && (
+                    <div className="learning-block">
+                      <strong>➡️ After reading this:</strong>
+                      <ul>
+                        {result.synthesizer.learningPath.nextSteps.map((step, idx) => (
+                          <li key={idx}>{step}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {result.synthesizer.learningPath.questions?.length > 0 && (
+                    <div className="learning-block">
+                      <strong>❓ Questions to explore:</strong>
+                      <ul>
+                        {result.synthesizer.learningPath.questions.map((q, idx) => (
+                          <li key={idx}>{q}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {result.synthesizer.relatedPapers.length > 0 && (
                 <div className="section relations-section">
@@ -564,11 +647,106 @@ export function PaperProcessor() {
           color: #10b981 !important;
           font-size: 1rem;
         }
-        .nyakupfuya p {
+        .nyakupfuya p, .nyakupfuya-text {
           margin: 0.75rem 0 0;
           font-size: 1.05rem;
           color: #d1fae5;
-          line-height: 1.7;
+          line-height: 1.8;
+          white-space: pre-wrap;
+        }
+        
+        /* Key Concepts Section */
+        .concepts-section {
+          background: #1a1a2e;
+          padding: 1.25rem;
+          border-radius: 8px;
+          margin-top: 1rem;
+        }
+        .concept-card {
+          background: #0d0d1a;
+          border: 1px solid #333;
+          border-radius: 8px;
+          padding: 1rem;
+          margin-bottom: 1rem;
+        }
+        .concept-card:last-child {
+          margin-bottom: 0;
+        }
+        .concept-term {
+          font-size: 1.1rem;
+          font-weight: 700;
+          color: #d97706;
+          margin-bottom: 0.5rem;
+        }
+        .concept-definition {
+          font-size: 1rem;
+          color: #ccc;
+          margin-bottom: 0.75rem;
+          line-height: 1.6;
+        }
+        .concept-analogy {
+          background: #1e2a1e;
+          padding: 0.75rem;
+          border-radius: 6px;
+          font-size: 0.95rem;
+          color: #d1fae5;
+          line-height: 1.6;
+          margin-bottom: 0.75rem;
+        }
+        .analogy-icon {
+          margin-right: 0.5rem;
+        }
+        .concept-importance {
+          font-size: 0.9rem;
+          color: #888;
+          line-height: 1.5;
+        }
+        .concept-importance em {
+          color: #aaa;
+        }
+        
+        /* Practical Implications */
+        .implications-section {
+          background: #1a1a2e;
+          padding: 1.25rem;
+          border-radius: 8px;
+          margin-top: 1rem;
+        }
+        .implications-list {
+          margin: 0.75rem 0 0;
+          padding-left: 1.5rem;
+        }
+        .implications-list li {
+          margin-bottom: 0.5rem;
+          line-height: 1.6;
+          color: #ccc;
+        }
+        
+        /* Learning Path */
+        .learning-section {
+          background: #1a1a2e;
+          padding: 1.25rem;
+          border-radius: 8px;
+          margin-top: 1rem;
+        }
+        .learning-block {
+          margin-top: 1rem;
+        }
+        .learning-block:first-of-type {
+          margin-top: 0.5rem;
+        }
+        .learning-block strong {
+          color: #d97706;
+          font-size: 0.95rem;
+        }
+        .learning-block ul {
+          margin: 0.5rem 0 0;
+          padding-left: 1.5rem;
+        }
+        .learning-block li {
+          margin-bottom: 0.4rem;
+          color: #bbb;
+          line-height: 1.5;
         }
       `}</style>
     </div>

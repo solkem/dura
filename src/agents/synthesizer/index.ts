@@ -31,7 +31,19 @@ export interface SynthesizerOutput {
     summaries: {
         oneLiner: string;       // <100 chars, punchy
         paragraph: string;      // 2-3 sentences
-        nyakupfuya: string;     // Simplified for rural learners (fallback if Curator didn't provide)
+        nyakupfuya: string;     // Rich, multi-paragraph explanation with analogies
+    };
+    keyConcepts?: Array<{
+        term: string;
+        simpleDefinition: string;
+        analogy: string;
+        whyItMatters: string;
+    }>;
+    practicalImplications?: string[];
+    learningPath?: {
+        prerequisites: string[];
+        nextSteps: string[];
+        questions: string[];
     };
     relatedPapers: Array<{
         paperId: string;
@@ -39,7 +51,6 @@ export interface SynthesizerOutput {
         strength: number;
         explanation: string;
     }>;
-    prerequisites: string[];  // Paper IDs that should be read first
 }
 
 /**
