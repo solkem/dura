@@ -33,9 +33,12 @@ COPY package*.json ./
 RUN npm install --omit=dev --legacy-peer-deps
 
 # Copy built assets from builder
-# Copy built assets from builder
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/drizzle ./drizzle
+
+# Copy migration scripts
+COPY --from=builder /app/scripts ./scripts
+RUN chmod +x /app/scripts/entrypoint.sh
 
 # Expose port
 EXPOSE 4321
@@ -50,5 +53,6 @@ ENV DB_URL=/app/data/dura.db
 RUN mkdir -p /app/data
 VOLUME /app/data
 
-# Start the server
-CMD ["node", "./dist/server/entry.mjs"]
+# Use entrypoint script (runs migrations, then starts server)
+ENTRYPOINT ["/app/scripts/entrypoint.sh"]
+
