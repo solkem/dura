@@ -29,36 +29,22 @@ export const db = drizzle(sqlite as Database.Database, { schema });
 
 // Run migrations synchronously at startup (production only)
 if (process.env.NODE_ENV === 'production' && !dbUrl.includes('local.db') && !isMock && sqlite) {
-    console.log("[DB] Running migrations...");
-    try {
-        migrate(db, { migrationsFolder: 'drizzle' });
-        console.log("[DB] Migrations complete.");
-    } catch (migrationErr: any) {
-        console.error("[DB] Migration error:", migrationErr?.message || migrationErr);
+    // Check if migrations have already been applied by looking for the user table
+    const hasUserTable = (sqlite as Database.Database)
+        .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='user'")
+        .get();
 
-        // Handle "table already exists" errors by resetting migration state
-        if (migrationErr?.cause?.code === 'SQLITE_ERROR' &&
-            migrationErr?.cause?.message?.includes('already exists')) {
-            console.warn("[DB] Migration conflict detected. Resetting all tables...");
-            try {
-                // Drop the migration tracking table and all app tables
-                (sqlite as Database.Database).exec(`
-                    DROP TABLE IF EXISTS __drizzle_migrations;
-                    DROP TABLE IF EXISTS session;
-                    DROP TABLE IF EXISTS user_progress;
-                    DROP TABLE IF EXISTS user_stars;
-                    DROP TABLE IF EXISTS user;
-                    DROP TABLE IF EXISTS papers;
-                    DROP TABLE IF EXISTS invitation;
-                    DROP TABLE IF EXISTS agent_logs;
-                    DROP TABLE IF EXISTS pending_memories;
-                `);
-                console.log("[DB] Tables reset. Retrying migration...");
-                migrate(db, { migrationsFolder: 'drizzle' });
-                console.log("[DB] Migration retry successful.");
-            } catch (resetErr: any) {
-                console.error("[DB] Migration reset failed:", resetErr?.message || resetErr);
-            }
+    if (hasUserTable) {
+        console.log("[DB] Database already initialized, skipping migrations.");
+    } else {
+        console.log("[DB] Running migrations for fresh database...");
+        try {
+            migrate(db, { migrationsFolder: 'drizzle' });
+            console.log("[DB] Migrations complete.");
+        } catch (migrationErr: any) {
+            console.error("[DB] Migration error:", migrationErr?.message || migrationErr);
+            // Don't reset tables - just log the error
+            // This preserves existing data if there's a migration conflict
         }
     }
 }

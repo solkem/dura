@@ -6,7 +6,7 @@ echo "[entrypoint] Starting Dura..."
 
 # Run migrations
 echo "[entrypoint] Running database migrations..."
-node /app/scripts/migrate.js
+node /app/scripts/migrate.cjs
 
 # Check if migration succeeded
 if [ $? -ne 0 ]; then
