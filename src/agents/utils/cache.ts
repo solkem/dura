@@ -22,17 +22,29 @@ function getApiKey(): string {
         || '';
 
     if (!apiKey) {
-        console.error('GOOGLE_AI_API_KEY not found in environment');
+        console.error('[Cache] GOOGLE_AI_API_KEY not found in environment!');
+        console.error('[Cache] Checked: import.meta.env =', !!(import.meta as any).env?.GOOGLE_AI_API_KEY);
+        console.error('[Cache] Checked: process.env =', !!process.env.GOOGLE_AI_API_KEY);
+    } else {
+        console.log('[Cache] API key found, length:', apiKey.length);
     }
     return apiKey;
 }
 
-// Lazy initialize client
+// Lazy initialize client - recreate if API key changes
 let genAI: GoogleGenerativeAI | null = null;
+let lastApiKey: string = '';
 
 function getGenAI(): GoogleGenerativeAI {
-    if (!genAI) {
-        genAI = new GoogleGenerativeAI(getApiKey());
+    const apiKey = getApiKey();
+
+    // Recreate client if API key changed or is different
+    if (!genAI || lastApiKey !== apiKey) {
+        console.log('[Cache] Initializing GoogleGenerativeAI client');
+        genAI = new GoogleGenerativeAI(apiKey);
+        lastApiKey = apiKey;
+        // Clear model cache since we have a new client
+        modelCache.clear();
     }
     return genAI;
 }
@@ -50,6 +62,9 @@ const modelCache: Map<string, GenerativeModel> = new Map();
  * For full API-level caching, upgrade to @google/genai package.
  */
 function getOrCreateModel(cacheName: string, systemInstruction: string): GenerativeModel {
+    // Always validate we have the current GenAI client
+    const client = getGenAI();
+
     const existing = modelCache.get(cacheName);
     if (existing) {
         console.log(`[Cache] Reusing model instance: ${cacheName}`);
@@ -58,7 +73,7 @@ function getOrCreateModel(cacheName: string, systemInstruction: string): Generat
 
     console.log(`[Cache] Creating new model instance: ${cacheName}`);
 
-    const model = getGenAI().getGenerativeModel({
+    const model = client.getGenerativeModel({
         model: 'gemini-2.0-flash',
         generationConfig: {
             responseMimeType: 'application/json',
