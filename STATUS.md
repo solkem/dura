@@ -1,44 +1,58 @@
 # Dura Development Status
 
-**Last Updated:** 2026-01-20
+**Last Updated:** 2026-01-20 21:26 EST
 
-## Recent Session Summary
+## Latest Session Summary (Jan 20, 2026)
 
 ### What Was Accomplished
 
-#### 1. Integrated Nyakupfuya Test into Curator (Option C)
-- The Curator now evaluates **both relevance AND accessibility** in a single API call
-- Papers are only approved if they pass the Nyakupfuya test
-- The Nyakupfuya summary is generated during curation, not after
-- **Files:** `src/agents/curator/prompt.ts`, `src/agents/curator/index.ts`
-
-#### 2. Context Caching Infrastructure
-- Created `src/agents/utils/cache.ts` - Model instance caching
-- Updated Curator and Synthesizer to use caching
-- Added feature flag (`USE_CACHING`) for easy toggling
-- **Documentation:** `docs/CONTEXT_CACHING.md`
-
-#### 3. Enhanced Synthesizer for Deeper Translations
+#### 1. Enhanced Synthesizer for Deeper Paper Translations
 - Rewrote Synthesizer prompt for rich, multi-section output:
-  - **Nyakupfuya:** 3-5 paragraphs with village/farming analogies
-  - **Key Concepts:** Term, definition, analogy, importance
-  - **Practical Implications:** What can you DO with this?
-  - **Learning Path:** Prerequisites, next steps, questions
+  - **Nyakupfuya:** 3-5 paragraphs with village/farming analogies (not 1 paragraph)
+  - **Key Concepts Explained:** Term, definition, analogy, importance for each technical concept
+  - **Practical Implications:** What can you DO with this knowledge?
+  - **Learning Path:** Prerequisites, next steps, questions to explore
 - Updated UI with new sections and styling
 - **Files:** `src/agents/synthesizer/prompt.ts`, `src/agents/synthesizer/index.ts`, `src/components/admin/PaperProcessor.tsx`
 
-#### 4. DeepSeek Fine-Tuning Roadmap
-- Created future milestone documentation
-- **Documentation:** `docs/DEEPSEEK_FINETUNING.md`
+#### 2. Comprehensive Admin Dashboard
+- **`/admin`** - Central dashboard with:
+  - User stats (by role)
+  - Paper stats (approved/pending/rejected)
+  - Memory stats (pending review)
+  - Invite stats (used/active)
+  - API usage and estimated costs
+  - Quick action cards
+  - Recent users list
+- **`/admin/users`** - User management:
+  - View all users
+  - Change roles (public → researcher → contributor → admin)
+  - Delete users
+- **`/admin/logs`** - API usage tracking:
+  - Usage by agent
+  - Token counts and costs
+  - Latency tracking
+- **API Endpoints:**
+  - `POST /api/admin/users/role` - Change user role
+  - `POST /api/admin/users/delete` - Delete user
 
-#### 5. Memory System (Added from other machine)
-- Agents now log observations as pending memories
-- Humans can approve/reject learnings
-- **Files:** `src/agents/utils/memory.ts`, `src/pages/admin/memories.astro`
+#### 3. Fixed Route Conflicts
+- Moved Decap CMS from `/admin` to `/cms`
+  - Renamed `src/pages/admin.astro` → `src/pages/cms.astro`
+  - Moved `public/admin/` → `public/cms/`
+- Our custom admin dashboard now serves at `/admin`
+
+#### 4. Database Migration
+- Added `memories` table migration (`drizzle/0002_add_memories.sql`)
+- Updated migration journal
+
+#### 5. Fixed API Key Caching Bug
+- Model cache was storing models with empty API keys
+- Fixed by detecting key changes and clearing cache on change
 
 ### Deployment Notes
 
-#### Droplet Deployment Script (`~/.dura-secrets` + `dura-container.sh`)
+#### Droplet Deployment Script
 ```bash
 # ~/.dura-secrets (chmod 600)
 GITHUB_TOKEN=ghp_your_token_here
@@ -46,12 +60,10 @@ GOOGLE_AI_API_KEY=AIzaSy...your_key_here
 ```
 
 ```bash
-# dura-container.sh
-#!/bin/bash
+# Deploy command sequence
 source ~/.dura-secrets
-echo "$GITHUB_TOKEN" | docker login ghcr.io -u solkem --password-stdin
+docker rm -f dura
 docker pull ghcr.io/solkem/dura:latest
-docker stop dura && docker rm dura
 docker run -d --name dura \
   -p 3000:4321 \
   -v /app/data:/app/data \
@@ -59,27 +71,25 @@ docker run -d --name dura \
   ghcr.io/solkem/dura:latest
 ```
 
-**IMPORTANT:** Always `source ~/.dura-secrets` before running the script if running commands manually.
-
-### Bugs Fixed
-
-1. **403 API Key Error:** Model cache was storing models with empty API keys. Fixed by detecting key changes and clearing cache.
-
-2. **Docker Login Denied:** GitHub token expired. Regenerated with `read:packages` and `write:packages` scopes.
+### Current Production Status ✅
+- Admin Dashboard: Working
+- Paper Processor: Working
+- User Management: Working
+- Memory System: Working (needs memories to be created)
 
 ---
 
 ## Next Steps / TODO
 
 ### Immediate
-- [ ] Test the enhanced Synthesizer output with different paper types
+- [ ] Test enhanced Synthesizer output with different paper types
 - [ ] Verify Key Concepts and Learning Path sections render correctly
-- [ ] Consider adding "Copy" button for Nyakupfuya summaries
+- [ ] Style the users.astro and logs.astro pages for light theme
 
 ### Short-Term
+- [ ] Add "Copy" button for Nyakupfuya summaries
 - [ ] Review and approve pending memories via `/admin/memories`
 - [ ] Fine-tune prompts based on quality of generated content
-- [ ] Add error handling UI when processing fails
 
 ### Medium-Term
 - [ ] Implement full Gemini API Context Caching (`@google/genai` package)
@@ -93,28 +103,38 @@ docker run -d --name dura \
 
 ---
 
-## Key Architectural Decisions
+## Key Files Reference
 
-### Why Integrated Curator (Option C)?
-The Nyakupfuya test should be **central** to curation, not an afterthought. If a paper can't be explained to a livestock keeper, it shouldn't be in Dura. Single API call is also more cost-effective.
+### Agents
+- `src/agents/curator/prompt.ts` - Curator prompt with Nyakupfuya test
+- `src/agents/curator/index.ts` - Curator agent logic + memory creation
+- `src/agents/synthesizer/prompt.ts` - Enhanced Synthesizer prompt
+- `src/agents/synthesizer/index.ts` - Synthesizer agent logic
+- `src/agents/utils/cache.ts` - Model instance caching
+- `src/agents/utils/memory.ts` - Memory creation utilities
 
-### Why Enhanced Synthesizer?
-A one-paragraph summary isn't enough for Citizen Scientists. They deserve:
-- Deep translations of technical concepts
-- Rich analogies from their daily lives
-- Clear learning paths
+### Admin Pages
+- `src/pages/admin/index.astro` - Dashboard
+- `src/pages/admin/users.astro` - User management
+- `src/pages/admin/logs.astro` - API logs
+- `src/pages/admin/papers.astro` - Paper processor
+- `src/pages/admin/invites.astro` - Invite management
+- `src/pages/admin/memories.astro` - Memory review
 
-### Why Memory System?
-To create a feedback loop:
-1. AI observes patterns during curation
-2. Humans review and approve/reject
-3. Approved learnings improve future prompts
-4. Eventually: training data for DeepSeek fine-tuning
+### API Endpoints
+- `src/pages/api/agents/process-pdf.ts` - PDF processing
+- `src/pages/api/admin/users/role.ts` - Change user role
+- `src/pages/api/admin/users/delete.ts` - Delete user
 
 ---
 
 ## Production URLs
 
 - **Main Site:** https://dura.disruptiveiot.org
-- **Admin Papers:** https://dura.disruptiveiot.org/admin/papers
-- **Admin Memories:** https://dura.disruptiveiot.org/admin/memories
+- **Admin Dashboard:** https://dura.disruptiveiot.org/admin
+- **Paper Processor:** https://dura.disruptiveiot.org/admin/papers
+- **User Management:** https://dura.disruptiveiot.org/admin/users
+- **Agent Logs:** https://dura.disruptiveiot.org/admin/logs
+- **Invites:** https://dura.disruptiveiot.org/admin/invites
+- **Memories:** https://dura.disruptiveiot.org/admin/memories
+- **Decap CMS:** https://dura.disruptiveiot.org/cms (if needed)
