@@ -26,14 +26,45 @@ export const db = drizzle(sqlite, { schema });
 if (process.env.NODE_ENV === 'production' && !dbUrl.includes('local.db') && sqlite.prepare) {
     try {
         // Dynamic import to avoid build-time issues
-        import('drizzle-orm/better-sqlite3/migrator').then(({ migrate }) => {
+        import('drizzle-orm/better-sqlite3/migrator').then(async ({ migrate }) => {
             console.log("Running migrations...");
-            migrate(db, { migrationsFolder: 'drizzle' });
-            console.log("Migrations complete.");
+            try {
+                migrate(db, { migrationsFolder: 'drizzle' });
+                console.log("Migrations complete.");
+            } catch (migrationErr: any) {
+                // Handle "table already exists" errors by resetting migration state
+                if (migrationErr?.cause?.code === 'SQLITE_ERROR' &&
+                    migrationErr?.cause?.message?.includes('already exists')) {
+                    console.warn("Migration conflict detected. Resetting migration tracking...");
+                    try {
+                        // Drop the migration tracking table and all app tables
+                        // This forces a clean migration run
+                        sqlite.exec(`
+                            DROP TABLE IF EXISTS __drizzle_migrations;
+                            DROP TABLE IF EXISTS session;
+                            DROP TABLE IF EXISTS user_progress;
+                            DROP TABLE IF EXISTS user_stars;
+                            DROP TABLE IF EXISTS user;
+                            DROP TABLE IF EXISTS papers;
+                            DROP TABLE IF EXISTS invitation;
+                            DROP TABLE IF EXISTS agent_logs;
+                            DROP TABLE IF EXISTS pending_memories;
+                        `);
+                        console.log("Tables reset. Retrying migration...");
+                        migrate(db, { migrationsFolder: 'drizzle' });
+                        console.log("Migration retry successful.");
+                    } catch (resetErr) {
+                        console.error("Migration reset failed:", resetErr);
+                    }
+                } else {
+                    console.error("Migration failed:", migrationErr);
+                }
+            }
         }).catch(err => {
-            console.error("Migration failed:", err);
+            console.error("Migration module import failed:", err);
         });
     } catch (e) {
         console.warn("Skipping migration init", e);
     }
 }
+
