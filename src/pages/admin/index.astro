@@ -199,8 +199,8 @@ const stats = {
                     <span class="usage-value"
                         >${
                             (
-                                (stats.api.totalTokensIn || 0) * 0.00001 +
-                                (stats.api.totalTokensOut || 0) * 0.00003
+                                Number(stats.api.totalTokensIn || 0) * 0.00001 +
+                                Number(stats.api.totalTokensOut || 0) * 0.00003
                             ).toFixed(4)
                         }</span
                     >
@@ -305,12 +305,12 @@ const stats = {
         .dashboard-header h1 {
             font-size: 2rem;
             font-weight: 700;
-            color: #f5f5f5;
+            color: #1f2937;
             margin: 0;
         }
 
         .welcome {
-            color: #888;
+            color: #6b7280;
             margin-top: 0.5rem;
         }
 
@@ -323,13 +323,14 @@ const stats = {
         }
 
         .stat-card {
-            background: #1a1a2e;
-            border: 1px solid #333;
+            background: #fff;
+            border: 1px solid #e5e7eb;
             border-radius: 12px;
             padding: 1.25rem;
             display: flex;
             gap: 1rem;
             align-items: flex-start;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
         .stat-icon {
@@ -339,12 +340,12 @@ const stats = {
         .stat-number {
             font-size: 2rem;
             font-weight: 700;
-            color: #fff;
+            color: #1f2937;
         }
 
         .stat-label {
             font-size: 0.9rem;
-            color: #888;
+            color: #6b7280;
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
@@ -355,31 +356,32 @@ const stats = {
             gap: 0.5rem;
             margin-top: 0.5rem;
             font-size: 0.8rem;
-            color: #666;
+            color: #9ca3af;
         }
 
         .stat-breakdown .approved {
-            color: #10b981;
+            color: #059669;
         }
         .stat-breakdown .pending {
-            color: #f59e0b;
+            color: #d97706;
         }
         .stat-breakdown .rejected {
-            color: #ef4444;
+            color: #dc2626;
         }
 
         /* API Usage */
         .api-usage {
-            background: #1a1a2e;
-            border: 1px solid #333;
+            background: #fff;
+            border: 1px solid #e5e7eb;
             border-radius: 12px;
             padding: 1.25rem;
             margin-bottom: 2rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
         .api-usage h3 {
             margin: 0 0 1rem;
-            color: #f5f5f5;
+            color: #1f2937;
             font-size: 1rem;
         }
 
@@ -396,20 +398,20 @@ const stats = {
 
         .usage-label {
             font-size: 0.8rem;
-            color: #888;
+            color: #6b7280;
             text-transform: uppercase;
         }
 
         .usage-value {
             font-size: 1.25rem;
             font-weight: 600;
-            color: #d97706;
+            color: #b45309;
         }
 
         /* Admin Actions */
         .admin-actions h2 {
             font-size: 1.25rem;
-            color: #f5f5f5;
+            color: #1f2937;
             margin-bottom: 1rem;
         }
 
@@ -421,22 +423,24 @@ const stats = {
         }
 
         .action-card {
-            background: #0d0d1a;
-            border: 1px solid #333;
+            background: #fff;
+            border: 1px solid #e5e7eb;
             border-radius: 10px;
             padding: 1.25rem;
             text-decoration: none;
             transition: all 0.2s;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
         .action-card:hover {
             border-color: #d97706;
             transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
         .action-card.highlight {
             border-color: #f59e0b;
-            background: linear-gradient(135deg, #1a1a2e 0%, #2a1a0a 100%);
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
         }
 
         .action-icon {
@@ -447,20 +451,20 @@ const stats = {
         .action-title {
             font-size: 1rem;
             font-weight: 600;
-            color: #f5f5f5;
+            color: #1f2937;
             margin-bottom: 0.25rem;
         }
 
         .action-desc {
             font-size: 0.85rem;
-            color: #888;
+            color: #6b7280;
             line-height: 1.4;
         }
 
         .badge {
             display: inline-block;
             background: #f59e0b;
-            color: #000;
+            color: #fff;
             font-size: 0.7rem;
             font-weight: 600;
             padding: 0.15rem 0.5rem;
@@ -470,15 +474,16 @@ const stats = {
 
         /* Recent Section */
         .recent-section {
-            background: #1a1a2e;
-            border: 1px solid #333;
+            background: #fff;
+            border: 1px solid #e5e7eb;
             border-radius: 12px;
             padding: 1.25rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
         .recent-section h3 {
             margin: 0 0 1rem;
-            color: #f5f5f5;
+            color: #1f2937;
             font-size: 1rem;
         }
 
@@ -492,14 +497,15 @@ const stats = {
             display: flex;
             align-items: center;
             gap: 1rem;
-            padding: 0.5rem;
-            background: #0d0d1a;
+            padding: 0.5rem 0.75rem;
+            background: #f9fafb;
             border-radius: 6px;
+            border: 1px solid #e5e7eb;
         }
 
         .recent-name {
             font-weight: 500;
-            color: #f5f5f5;
+            color: #1f2937;
             min-width: 120px;
         }
 
@@ -529,14 +535,14 @@ const stats = {
 
         .recent-email {
             font-size: 0.85rem;
-            color: #666;
+            color: #9ca3af;
             margin-left: auto;
         }
 
         .view-all {
             display: inline-block;
             margin-top: 1rem;
-            color: #d97706;
+            color: #b45309;
             font-size: 0.9rem;
             text-decoration: none;
         }
