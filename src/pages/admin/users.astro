@@ -1,0 +1,347 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { db } from "../../db";
+import { users } from "../../db/schema";
+import { desc } from "drizzle-orm";
+
+export const prerender = false;
+
+// Check if user is admin
+const user = Astro.locals.user;
+if (!user) {
+    return Astro.redirect("/login");
+}
+if (user.role !== "admin") {
+    return Astro.redirect("/");
+}
+
+// Get all users
+const allUsers = await db
+    .select({
+        id: users.id,
+        username: users.username,
+        email: users.email,
+        role: users.role,
+        createdAt: users.createdAt,
+    })
+    .from(users)
+    .orderBy(desc(users.createdAt));
+---
+
+<BaseLayout title="User Management | Dura Admin">
+    <div class="user-management">
+        <header class="page-header">
+            <div>
+                <a href="/admin" class="back-link">← Back to Dashboard</a>
+                <h1>👥 User Management</h1>
+                <p class="subtitle">{allUsers.length} users registered</p>
+            </div>
+        </header>
+
+        <div class="users-table-container">
+            <table class="users-table">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Joined</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {
+                        allUsers.map((u) => (
+                            <tr data-user-id={u.id}>
+                                <td class="username-cell">
+                                    <span class="username">{u.username}</span>
+                                    {u.id === user.id && (
+                                        <span class="you-badge">You</span>
+                                    )}
+                                </td>
+                                <td class="email-cell">{u.email || "—"}</td>
+                                <td class="role-cell">
+                                    <select
+                                        class="role-select"
+                                        data-user-id={u.id}
+                                        disabled={u.id === user.id}
+                                    >
+                                        <option
+                                            value="public"
+                                            selected={u.role === "public"}
+                                        >
+                                            Public
+                                        </option>
+                                        <option
+                                            value="researcher"
+                                            selected={u.role === "researcher"}
+                                        >
+                                            Researcher
+                                        </option>
+                                        <option
+                                            value="contributor"
+                                            selected={u.role === "contributor"}
+                                        >
+                                            Contributor
+                                        </option>
+                                        <option
+                                            value="admin"
+                                            selected={u.role === "admin"}
+                                        >
+                                            Admin
+                                        </option>
+                                    </select>
+                                </td>
+                                <td class="date-cell">
+                                    {new Date(u.createdAt).toLocaleDateString()}
+                                </td>
+                                <td class="actions-cell">
+                                    {u.id !== user.id && (
+                                        <button
+                                            class="delete-btn"
+                                            data-user-id={u.id}
+                                            data-username={u.username}
+                                        >
+                                            Delete
+                                        </button>
+                                    )}
+                                </td>
+                            </tr>
+                        ))
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div id="toast" class="toast hidden"></div>
+    </div>
+
+    <style>
+        .user-management {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .back-link {
+            color: #888;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .back-link:hover {
+            color: #d97706;
+        }
+
+        .page-header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #f5f5f5;
+            margin: 0.5rem 0 0;
+        }
+
+        .subtitle {
+            color: #888;
+            margin: 0.25rem 0 0;
+        }
+
+        .users-table-container {
+            background: #1a1a2e;
+            border: 1px solid #333;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .users-table th {
+            text-align: left;
+            padding: 1rem;
+            background: #0d0d1a;
+            color: #888;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid #333;
+        }
+
+        .users-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #222;
+            color: #ccc;
+        }
+
+        .users-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .users-table tr:hover {
+            background: #0d0d1a;
+        }
+
+        .username-cell {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .username {
+            font-weight: 500;
+            color: #f5f5f5;
+        }
+
+        .you-badge {
+            font-size: 0.7rem;
+            background: #d97706;
+            color: #000;
+            padding: 0.1rem 0.4rem;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .email-cell {
+            color: #888;
+        }
+
+        .role-select {
+            background: #0d0d1a;
+            border: 1px solid #444;
+            color: #f5f5f5;
+            padding: 0.4rem 0.75rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .role-select:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .role-select:hover:not(:disabled) {
+            border-color: #d97706;
+        }
+
+        .date-cell {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .delete-btn {
+            background: transparent;
+            border: 1px solid #ef4444;
+            color: #ef4444;
+            padding: 0.3rem 0.75rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .delete-btn:hover {
+            background: #ef4444;
+            color: #fff;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            color: #fff;
+            font-weight: 500;
+            z-index: 1000;
+            transition: opacity 0.3s;
+        }
+
+        .toast.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .toast.success {
+            background: #10b981;
+        }
+
+        .toast.error {
+            background: #ef4444;
+        }
+    </style>
+
+    <script>
+        const toast = document.getElementById("toast")!;
+
+        function showToast(message: string, type: "success" | "error") {
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            setTimeout(() => {
+                toast.classList.add("hidden");
+            }, 3000);
+        }
+
+        // Role change handlers
+        document.querySelectorAll(".role-select").forEach((select) => {
+            select.addEventListener("change", async (e) => {
+                const target = e.target as HTMLSelectElement;
+                const userId = target.dataset.userId;
+                const newRole = target.value;
+
+                const response = await fetch("/api/admin/users/role", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ userId, role: newRole }),
+                });
+
+                if (response.ok) {
+                    showToast(`Role updated to ${newRole}`, "success");
+                } else {
+                    const data = await response.json();
+                    showToast(data.error || "Failed to update role", "error");
+                }
+            });
+        });
+
+        // Delete handlers
+        document.querySelectorAll(".delete-btn").forEach((btn) => {
+            btn.addEventListener("click", async (e) => {
+                const target = e.target as HTMLButtonElement;
+                const userId = target.dataset.userId;
+                const username = target.dataset.username;
+
+                if (
+                    !confirm(
+                        `Are you sure you want to delete user "${username}"? This cannot be undone.`,
+                    )
+                ) {
+                    return;
+                }
+
+                const response = await fetch("/api/admin/users/delete", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ userId }),
+                });
+
+                if (response.ok) {
+                    showToast(`User ${username} deleted`, "success");
+                    // Remove row from table
+                    const row = document.querySelector(
+                        `tr[data-user-id="${userId}"]`,
+                    );
+                    row?.remove();
+                } else {
+                    const data = await response.json();
+                    showToast(data.error || "Failed to delete user", "error");
+                }
+            });
+        });
+    </script>
+</BaseLayout>

@@ -1,0 +1,335 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { db } from "../../db";
+import { agentLogs } from "../../db/schema";
+import { desc, sql } from "drizzle-orm";
+
+export const prerender = false;
+
+// Check if user is admin
+const user = Astro.locals.user;
+if (!user) {
+    return Astro.redirect("/login");
+}
+if (user.role !== "admin") {
+    return Astro.redirect("/");
+}
+
+// Get recent logs
+const recentLogs = await db
+    .select()
+    .from(agentLogs)
+    .orderBy(desc(agentLogs.createdAt))
+    .limit(100);
+
+// Get usage by agent
+const usageByAgent = await db
+    .select({
+        agent: agentLogs.agent,
+        calls: sql`COUNT(*)`,
+        tokensIn: sql`SUM(${agentLogs.tokensIn})`,
+        tokensOut: sql`SUM(${agentLogs.tokensOut})`,
+        avgLatency: sql`AVG(${agentLogs.latencyMs})`,
+    })
+    .from(agentLogs)
+    .groupBy(agentLogs.agent);
+
+// Calculate costs (Gemini Flash pricing approximation)
+const COST_PER_1K_IN = 0.00001;
+const COST_PER_1K_OUT = 0.00003;
+
+function calculateCost(tokensIn: number, tokensOut: number): number {
+    return tokensIn * COST_PER_1K_IN + tokensOut * COST_PER_1K_OUT;
+}
+---
+
+<BaseLayout title="Agent Logs | Dura Admin">
+    <div class="logs-page">
+        <header class="page-header">
+            <a href="/admin" class="back-link">← Back to Dashboard</a>
+            <h1>📋 Agent Logs</h1>
+            <p class="subtitle">API usage and cost tracking</p>
+        </header>
+
+        <!-- Summary by Agent -->
+        <section class="summary-section">
+            <h2>Usage by Agent</h2>
+            <div class="agent-cards">
+                {
+                    usageByAgent.map((agent) => (
+                        <div class="agent-card">
+                            <div class="agent-name">{agent.agent}</div>
+                            <div class="agent-stats">
+                                <div class="stat">
+                                    <span class="stat-value">
+                                        {agent.calls}
+                                    </span>
+                                    <span class="stat-label">Calls</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-value">
+                                        {Number(
+                                            agent.tokensIn || 0,
+                                        ).toLocaleString()}
+                                    </span>
+                                    <span class="stat-label">Tokens In</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-value">
+                                        {Number(
+                                            agent.tokensOut || 0,
+                                        ).toLocaleString()}
+                                    </span>
+                                    <span class="stat-label">Tokens Out</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-value">
+                                        {Math.round(
+                                            Number(agent.avgLatency || 0),
+                                        )}
+                                        ms
+                                    </span>
+                                    <span class="stat-label">Avg Latency</span>
+                                </div>
+                                <div class="stat cost">
+                                    <span class="stat-value">
+                                        $
+                                        {calculateCost(
+                                            Number(agent.tokensIn || 0),
+                                            Number(agent.tokensOut || 0),
+                                        ).toFixed(4)}
+                                    </span>
+                                    <span class="stat-label">Est. Cost</span>
+                                </div>
+                            </div>
+                        </div>
+                    ))
+                }
+            </div>
+        </section>
+
+        <!-- Recent Logs Table -->
+        <section class="logs-section">
+            <h2>Recent API Calls</h2>
+            <div class="logs-table-container">
+                <table class="logs-table">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Agent</th>
+                            <th>Model</th>
+                            <th>Tokens In</th>
+                            <th>Tokens Out</th>
+                            <th>Latency</th>
+                            <th>Cost</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {
+                            recentLogs.map((log) => (
+                                <tr>
+                                    <td class="time-cell">
+                                        {new Date(
+                                            log.createdAt || "",
+                                        ).toLocaleString()}
+                                    </td>
+                                    <td>
+                                        <span
+                                            class={`agent-badge agent-${log.agent}`}
+                                        >
+                                            {log.agent}
+                                        </span>
+                                    </td>
+                                    <td class="model-cell">{log.model}</td>
+                                    <td>{log.tokensIn?.toLocaleString()}</td>
+                                    <td>{log.tokensOut?.toLocaleString()}</td>
+                                    <td>{log.latencyMs}ms</td>
+                                    <td class="cost-cell">
+                                        $
+                                        {calculateCost(
+                                            log.tokensIn || 0,
+                                            log.tokensOut || 0,
+                                        ).toFixed(5)}
+                                    </td>
+                                </tr>
+                            ))
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <style>
+        .logs-page {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .back-link {
+            color: #888;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .back-link:hover {
+            color: #d97706;
+        }
+
+        .page-header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #f5f5f5;
+            margin: 0.5rem 0 0;
+        }
+
+        .subtitle {
+            color: #888;
+            margin: 0.25rem 0 0;
+        }
+
+        /* Summary Section */
+        .summary-section {
+            margin-bottom: 2rem;
+        }
+
+        .summary-section h2 {
+            font-size: 1.1rem;
+            color: #f5f5f5;
+            margin-bottom: 1rem;
+        }
+
+        .agent-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+        }
+
+        .agent-card {
+            background: #1a1a2e;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 1.25rem;
+        }
+
+        .agent-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #d97706;
+            text-transform: capitalize;
+            margin-bottom: 1rem;
+        }
+
+        .agent-stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .stat {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #f5f5f5;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: #888;
+            text-transform: uppercase;
+        }
+
+        .stat.cost .stat-value {
+            color: #10b981;
+        }
+
+        /* Logs Table */
+        .logs-section h2 {
+            font-size: 1.1rem;
+            color: #f5f5f5;
+            margin-bottom: 1rem;
+        }
+
+        .logs-table-container {
+            background: #1a1a2e;
+            border: 1px solid #333;
+            border-radius: 12px;
+            overflow-x: auto;
+        }
+
+        .logs-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 700px;
+        }
+
+        .logs-table th {
+            text-align: left;
+            padding: 0.75rem 1rem;
+            background: #0d0d1a;
+            color: #888;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid #333;
+        }
+
+        .logs-table td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #222;
+            color: #ccc;
+            font-size: 0.9rem;
+        }
+
+        .logs-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .time-cell {
+            color: #888;
+            font-size: 0.8rem;
+        }
+
+        .model-cell {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .cost-cell {
+            color: #10b981;
+        }
+
+        .agent-badge {
+            font-size: 0.75rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            text-transform: capitalize;
+        }
+
+        .agent-curator {
+            background: #7c3aed;
+            color: #fff;
+        }
+        .agent-synthesizer {
+            background: #3b82f6;
+            color: #fff;
+        }
+        .agent-tutor {
+            background: #10b981;
+            color: #fff;
+        }
+        .agent-connector {
+            background: #f59e0b;
+            color: #000;
+        }
+    </style>
+</BaseLayout>

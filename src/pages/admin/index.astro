@@ -1,0 +1,548 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { db } from "../../db";
+import {
+    users,
+    invitations,
+    papers,
+    memories,
+    agentLogs,
+} from "../../db/schema";
+import { count, eq, desc, sql } from "drizzle-orm";
+
+export const prerender = false;
+
+// Check if user is admin
+const user = Astro.locals.user;
+if (!user) {
+    return Astro.redirect("/login");
+}
+if (user.role !== "admin") {
+    return Astro.redirect("/");
+}
+
+// Get stats
+const userStats = await db
+    .select({
+        total: count(),
+        admins: count(sql`CASE WHEN ${users.role} = 'admin' THEN 1 END`),
+        researchers: count(
+            sql`CASE WHEN ${users.role} = 'researcher' THEN 1 END`,
+        ),
+        contributors: count(
+            sql`CASE WHEN ${users.role} = 'contributor' THEN 1 END`,
+        ),
+        public: count(sql`CASE WHEN ${users.role} = 'public' THEN 1 END`),
+    })
+    .from(users);
+
+const paperStats = await db
+    .select({
+        total: count(),
+        approved: count(
+            sql`CASE WHEN ${papers.curatorStatus} = 'approved' THEN 1 END`,
+        ),
+        pending: count(
+            sql`CASE WHEN ${papers.curatorStatus} = 'pending' THEN 1 END`,
+        ),
+        rejected: count(
+            sql`CASE WHEN ${papers.curatorStatus} = 'rejected' THEN 1 END`,
+        ),
+    })
+    .from(papers);
+
+const memoryStats = await db
+    .select({
+        total: count(),
+        pending: count(
+            sql`CASE WHEN ${memories.status} = 'pending' THEN 1 END`,
+        ),
+        validated: count(
+            sql`CASE WHEN ${memories.status} = 'validated' THEN 1 END`,
+        ),
+    })
+    .from(memories);
+
+const inviteStats = await db
+    .select({
+        total: count(),
+        used: count(
+            sql`CASE WHEN ${invitations.usedAt} IS NOT NULL THEN 1 END`,
+        ),
+        active: count(
+            sql`CASE WHEN ${invitations.usedAt} IS NULL AND ${invitations.expiresAt} > ${Date.now()} THEN 1 END`,
+        ),
+    })
+    .from(invitations);
+
+// Get recent users
+const recentUsers = await db
+    .select()
+    .from(users)
+    .orderBy(desc(users.createdAt))
+    .limit(5);
+
+// Get API usage for cost tracking
+const apiUsage = await db
+    .select({
+        totalTokensIn: sql`SUM(${agentLogs.tokensIn})`,
+        totalTokensOut: sql`SUM(${agentLogs.tokensOut})`,
+        totalCalls: count(),
+    })
+    .from(agentLogs);
+
+const stats = {
+    users: userStats[0],
+    papers: paperStats[0],
+    memories: memoryStats[0],
+    invites: inviteStats[0],
+    api: apiUsage[0],
+};
+---
+
+<BaseLayout title="Admin Dashboard | Dura">
+    <div class="admin-dashboard">
+        <header class="dashboard-header">
+            <h1>🏛️ Admin Dashboard</h1>
+            <p class="welcome">
+                Welcome back, <strong>{user.username}</strong>
+            </p>
+        </header>
+
+        <!-- Quick Stats -->
+        <section class="stats-grid">
+            <div class="stat-card users">
+                <div class="stat-icon">👥</div>
+                <div class="stat-content">
+                    <div class="stat-number">{stats.users.total}</div>
+                    <div class="stat-label">Total Users</div>
+                    <div class="stat-breakdown">
+                        <span>{stats.users.admins} admin</span>
+                        <span>{stats.users.researchers} researchers</span>
+                        <span>{stats.users.contributors} contributors</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-card papers">
+                <div class="stat-icon">📄</div>
+                <div class="stat-content">
+                    <div class="stat-number">{stats.papers.total}</div>
+                    <div class="stat-label">Papers</div>
+                    <div class="stat-breakdown">
+                        <span class="approved"
+                            >{stats.papers.approved} approved</span
+                        >
+                        <span class="pending"
+                            >{stats.papers.pending} pending</span
+                        >
+                        <span class="rejected"
+                            >{stats.papers.rejected} rejected</span
+                        >
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-card memories">
+                <div class="stat-icon">🧠</div>
+                <div class="stat-content">
+                    <div class="stat-number">{stats.memories.total}</div>
+                    <div class="stat-label">Memories</div>
+                    <div class="stat-breakdown">
+                        <span class="pending"
+                            >{stats.memories.pending} pending review</span
+                        >
+                        <span class="approved"
+                            >{stats.memories.validated} validated</span
+                        >
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-card invites">
+                <div class="stat-icon">✉️</div>
+                <div class="stat-content">
+                    <div class="stat-number">{stats.invites.total}</div>
+                    <div class="stat-label">Invitations</div>
+                    <div class="stat-breakdown">
+                        <span>{stats.invites.used} used</span>
+                        <span>{stats.invites.active} active</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- API Usage / Cost Tracking -->
+        <section class="api-usage">
+            <h3>📊 API Usage (Cost Tracking)</h3>
+            <div class="usage-stats">
+                <div class="usage-item">
+                    <span class="usage-label">Total API Calls</span>
+                    <span class="usage-value">{stats.api.totalCalls || 0}</span>
+                </div>
+                <div class="usage-item">
+                    <span class="usage-label">Input Tokens</span>
+                    <span class="usage-value"
+                        >{(stats.api.totalTokensIn || 0).toLocaleString()}</span
+                    >
+                </div>
+                <div class="usage-item">
+                    <span class="usage-label">Output Tokens</span>
+                    <span class="usage-value"
+                        >{
+                            (stats.api.totalTokensOut || 0).toLocaleString()
+                        }</span
+                    >
+                </div>
+                <div class="usage-item">
+                    <span class="usage-label">Est. Cost</span>
+                    <span class="usage-value"
+                        >${
+                            (
+                                (stats.api.totalTokensIn || 0) * 0.00001 +
+                                (stats.api.totalTokensOut || 0) * 0.00003
+                            ).toFixed(4)
+                        }</span
+                    >
+                </div>
+            </div>
+        </section>
+
+        <!-- Admin Actions -->
+        <section class="admin-actions">
+            <h2>🛠️ Admin Actions</h2>
+            <div class="actions-grid">
+                <a href="/admin/papers" class="action-card">
+                    <div class="action-icon">📰</div>
+                    <div class="action-title">Paper Processor</div>
+                    <div class="action-desc">
+                        Upload and curate new research papers
+                    </div>
+                </a>
+
+                <a href="/admin/users" class="action-card">
+                    <div class="action-icon">👥</div>
+                    <div class="action-title">Manage Users</div>
+                    <div class="action-desc">
+                        View, edit roles, and manage user accounts
+                    </div>
+                </a>
+
+                <a href="/admin/invites" class="action-card">
+                    <div class="action-icon">✉️</div>
+                    <div class="action-title">Invite Researchers</div>
+                    <div class="action-desc">
+                        Generate invitation links for new users
+                    </div>
+                </a>
+
+                <a href="/admin/memories" class="action-card highlight">
+                    <div class="action-icon">🧠</div>
+                    <div class="action-title">Review Memories</div>
+                    <div class="action-desc">
+                        Approve or reject agent learnings
+                        {
+                            stats.memories.pending > 0 && (
+                                <span class="badge">
+                                    {stats.memories.pending} pending
+                                </span>
+                            )
+                        }
+                    </div>
+                </a>
+
+                <a href="/admin/import" class="action-card">
+                    <div class="action-icon">📥</div>
+                    <div class="action-title">Import BibTeX</div>
+                    <div class="action-desc">
+                        Bulk import papers from BibTeX files
+                    </div>
+                </a>
+
+                <a href="/admin/logs" class="action-card">
+                    <div class="action-icon">📋</div>
+                    <div class="action-title">Agent Logs</div>
+                    <div class="action-desc">
+                        View API usage and agent activity
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- Recent Users -->
+        <section class="recent-section">
+            <h3>👤 Recent Users</h3>
+            <div class="recent-list">
+                {
+                    recentUsers.map((u) => (
+                        <div class="recent-item">
+                            <span class="recent-name">{u.username}</span>
+                            <span class={`recent-role role-${u.role}`}>
+                                {u.role}
+                            </span>
+                            <span class="recent-email">
+                                {u.email || "No email"}
+                            </span>
+                        </div>
+                    ))
+                }
+            </div>
+            <a href="/admin/users" class="view-all">View all users →</a>
+        </section>
+    </div>
+
+    <style>
+        .admin-dashboard {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .dashboard-header {
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #f5f5f5;
+            margin: 0;
+        }
+
+        .welcome {
+            color: #888;
+            margin-top: 0.5rem;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: #1a1a2e;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 1.25rem;
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stat-breakdown {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .stat-breakdown .approved {
+            color: #10b981;
+        }
+        .stat-breakdown .pending {
+            color: #f59e0b;
+        }
+        .stat-breakdown .rejected {
+            color: #ef4444;
+        }
+
+        /* API Usage */
+        .api-usage {
+            background: #1a1a2e;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .api-usage h3 {
+            margin: 0 0 1rem;
+            color: #f5f5f5;
+            font-size: 1rem;
+        }
+
+        .usage-stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .usage-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .usage-label {
+            font-size: 0.8rem;
+            color: #888;
+            text-transform: uppercase;
+        }
+
+        .usage-value {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #d97706;
+        }
+
+        /* Admin Actions */
+        .admin-actions h2 {
+            font-size: 1.25rem;
+            color: #f5f5f5;
+            margin-bottom: 1rem;
+        }
+
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .action-card {
+            background: #0d0d1a;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 1.25rem;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .action-card:hover {
+            border-color: #d97706;
+            transform: translateY(-2px);
+        }
+
+        .action-card.highlight {
+            border-color: #f59e0b;
+            background: linear-gradient(135deg, #1a1a2e 0%, #2a1a0a 100%);
+        }
+
+        .action-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .action-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #f5f5f5;
+            margin-bottom: 0.25rem;
+        }
+
+        .action-desc {
+            font-size: 0.85rem;
+            color: #888;
+            line-height: 1.4;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #f59e0b;
+            color: #000;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 0.15rem 0.5rem;
+            border-radius: 10px;
+            margin-left: 0.5rem;
+        }
+
+        /* Recent Section */
+        .recent-section {
+            background: #1a1a2e;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 1.25rem;
+        }
+
+        .recent-section h3 {
+            margin: 0 0 1rem;
+            color: #f5f5f5;
+            font-size: 1rem;
+        }
+
+        .recent-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .recent-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.5rem;
+            background: #0d0d1a;
+            border-radius: 6px;
+        }
+
+        .recent-name {
+            font-weight: 500;
+            color: #f5f5f5;
+            min-width: 120px;
+        }
+
+        .recent-role {
+            font-size: 0.75rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        .role-admin {
+            background: #7c3aed;
+            color: #fff;
+        }
+        .role-researcher {
+            background: #10b981;
+            color: #fff;
+        }
+        .role-contributor {
+            background: #3b82f6;
+            color: #fff;
+        }
+        .role-public {
+            background: #6b7280;
+            color: #fff;
+        }
+
+        .recent-email {
+            font-size: 0.85rem;
+            color: #666;
+            margin-left: auto;
+        }
+
+        .view-all {
+            display: inline-block;
+            margin-top: 1rem;
+            color: #d97706;
+            font-size: 0.9rem;
+            text-decoration: none;
+        }
+
+        .view-all:hover {
+            text-decoration: underline;
+        }
+    </style>
+</BaseLayout>
