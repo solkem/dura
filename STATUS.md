@@ -1,8 +1,33 @@
 # Dura Development Status
 
-**Last Updated:** 2026-01-20 21:26 EST
+**Last Updated:** 2026-01-21 15:30 EST
 
-## Latest Session Summary (Jan 20, 2026)
+## Latest Session Summary (Jan 21, 2026)
+
+### What Was Accomplished
+
+#### 1. Upgraded Gemini Model
+- Changed from `gemini-2.0-flash` → `gemini-2.5-flash-lite`
+- **Benefits:** 3x cheaper input, 6x cheaper output, 4x more free tier requests
+- **Files:** `cache.ts`, `gemini.ts`, `curator/index.ts`, `synthesizer/index.ts`
+
+#### 2. GitHub Actions Auto-Deploy
+- Created `.github/workflows/deploy.yml`
+- Push to `main` → Build Docker → Push to GHCR → SSH deploy to DO
+- Uses existing `~/dura-container.sh` script on droplet
+
+#### 3. Database Migration Fix (Critical)
+- Fixed issue where migrations would wipe ALL tables on container restart
+- Now checks if `user` table exists before running migrations
+- **Files:** `src/db/index.ts`, `scripts/migrate.cjs`, `scripts/entrypoint.sh`, `Dockerfile`
+
+#### 4. Logs Page Styling
+- Fixed light text on light background in `/admin/logs`
+- **File:** `src/pages/admin/logs.astro`
+
+---
+
+## Previous Session (Jan 20, 2026)
 
 ### What Was Accomplished
 
@@ -81,12 +106,14 @@ docker run -d --name dura \
 
 ## Next Steps / TODO
 
-### Immediate
-- [ ] Test enhanced Synthesizer output with different paper types
-- [ ] Verify Key Concepts and Learning Path sections render correctly
-- [ ] Style the users.astro and logs.astro pages for light theme
+### Immediate (From Jan 21 Session)
+- [ ] Add login error feedback when user doesn't exist
+- [ ] Test paper processing with new model (verify gemini-2.5-flash-lite works)
+- [ ] Update cost constants in `logs.astro` for accurate 2.5 Flash-Lite pricing
 
 ### Short-Term
+- [ ] Test enhanced Synthesizer output with different paper types
+- [ ] Verify Key Concepts and Learning Path sections render correctly
 - [ ] Add "Copy" button for Nyakupfuya summaries
 - [ ] Review and approve pending memories via `/admin/memories`
 - [ ] Fine-tune prompts based on quality of generated content
