@@ -111,6 +111,83 @@ We bridge theory and practice through **interactive concept cards** that show:
 
 ---
 
+## 🤖 AI Agents & Nyakupfuya Memory System
+
+Dura uses AI agents to curate and synthesize research papers, making them accessible to Citizen Scientists. The system learns from human feedback through the **Nyakupfuya Memory System**.
+
+### Agent Architecture
+
+```
+PDF Upload → Extract Text → Curator Agent → Synthesizer Agent → Save to Database
+                                ↓                    ↓
+                          [Learns Patterns]    [Learns Patterns]
+                                ↓                    ↓
+                          Pending Memories → Admin Review → Validated Memories
+                                                               ↓
+                                                    Future Processing Uses Memories
+```
+
+### Agents
+
+| Agent | Purpose |
+|-------|---------|
+| **Curator** | Evaluates papers for relevance and accessibility. Runs the "Nyakupfuya test" — can this be explained to a livestock keeper? |
+| **Synthesizer** | Generates summaries, key concepts, analogies, and identifies paper relationships |
+
+### Nyakupfuya Memory System
+
+Named after the Shona word for a farmer bound by debt, the memory system represents liberation through accessible knowledge. It's a **human-in-the-loop learning system** where:
+
+1. **Agents create observations** during paper processing
+2. **Admins review** at `/admin/memories`
+3. **Validated memories** influence future processing
+
+#### Memory Types
+
+| Type | Purpose | Example |
+|------|---------|---------|
+| **Episodic** | Specific events | "Paper X was rejected because it lacks practical applications" |
+| **Semantic** | General knowledge | "Privacy papers often require explaining ZK proofs first" |
+| **Procedural** | How-to patterns | "When summarizing for farmers, use livestock analogies" |
+| **Reflective** | Meta-observations | "Users prefer shorter paragraphs in Nyakupfuya summaries" |
+
+#### Memory Schema
+
+```sql
+CREATE TABLE memories (
+    id TEXT PRIMARY KEY,
+    type TEXT NOT NULL,           -- episodic, semantic, procedural, reflective
+    content TEXT NOT NULL,        -- The learned pattern
+    confidence REAL DEFAULT 0.5,  -- Agent confidence score
+    status TEXT DEFAULT 'pending', -- pending → validated/rejected
+    source_agent TEXT,            -- curator, synthesizer
+    evidence TEXT,                -- JSON: { paperIds: [], observations: [] }
+    reviewed_by TEXT,
+    reviewed_at TEXT,
+    review_notes TEXT
+);
+```
+
+### Paper Processing Flow
+
+1. **Upload PDF** at `/admin/papers`
+2. **Curator** evaluates:
+   - Domain relevance (0-1)
+   - Accessibility score (0-1)
+   - Creates pending memories for notable patterns
+3. **Synthesizer** generates:
+   - One-liner summary
+   - Paragraph summary
+   - **Nyakupfuya** (rich, multi-paragraph explanation with village/farming analogies)
+   - Key Concepts with definitions and analogies
+   - Practical Implications
+   - Learning Path (prerequisites, next steps, questions)
+   - Creates pending memories for concept explanations
+4. **Paper saved** to database
+5. **View in library** at `/papers`
+
+---
+
 ## 🛠️ Tech Stack
 
 | Layer | Technology | Purpose |
@@ -222,4 +299,4 @@ Uses Let's Encrypt certificates with Nginx. See `.dura-migration/ssl_sni_case_st
 ---
 
 **Last Updated**: January 2026
-**Version**: 0.2.0
+**Version**: 0.3.0

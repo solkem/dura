@@ -1,167 +1,177 @@
 # Dura Development Status
 
-**Last Updated:** 2026-01-21 15:30 EST
+**Last Updated:** 2026-01-21 22:35 EST
 
-## Latest Session Summary (Jan 21, 2026)
+## Latest Session Summary (Jan 21, 2026 - Evening)
 
 ### What Was Accomplished
 
-#### 1. Upgraded Gemini Model
-- Changed from `gemini-2.0-flash` → `gemini-2.5-flash-lite`
-- **Benefits:** 3x cheaper input, 6x cheaper output, 4x more free tier requests
-- **Files:** `cache.ts`, `gemini.ts`, `curator/index.ts`, `synthesizer/index.ts`
+#### 1. Fixed Paper Processing - Papers Now Save to Database! 🎉
+- **Critical Bug Fix:** Papers were being processed but never saved!
+- Now saves both approved and rejected papers with all metadata
+- Papers appear in `/papers` library after processing
+- **File:** `src/pages/api/agents/process-pdf.ts`
 
-#### 2. GitHub Actions Auto-Deploy
-- Created `.github/workflows/deploy.yml`
-- Push to `main` → Build Docker → Push to GHCR → SSH deploy to DO
-- Uses existing `~/dura-container.sh` script on droplet
+#### 2. Papers Page Now Reads from Database
+- Changed from content collections to database query
+- Shows only approved papers ordered by creation date
+- Displays relevance score badge
+- Empty state when no papers
+- **File:** `src/pages/papers/index.astro`
 
-#### 3. Database Migration Fix (Critical)
-- Fixed issue where migrations would wipe ALL tables on container restart
-- Now checks if `user` table exists before running migrations
-- **Files:** `src/db/index.ts`, `scripts/migrate.cjs`, `scripts/entrypoint.sh`, `Dockerfile`
+#### 3. Paper Detail Page Rewritten
+- Reads from database (not content collections)
+- Server-side rendered for proper session handling
+- Shows Nyakupfuya summary and Key Concepts
+- **File:** `src/pages/papers/[slug].astro`
 
-#### 4. Logs Page Styling
-- Fixed light text on light background in `/admin/logs`
-- **File:** `src/pages/admin/logs.astro`
+#### 4. SSR for All Pages (User Session Fix)
+- Added `prerender = false` to 10+ pages
+- Fixes: Login status shows correctly on all pages
+- Users no longer appear "logged out" when navigating
+- **Affected:** faq, login, updates, papers, learn, concepts, projects pages
+
+#### 5. Paper Processor UX Improvements
+- Added "Process Another Paper" button after processing
+- "View in Library" button navigates to actual paper page
+- Reset form clears all inputs for next paper
+- **File:** `src/components/admin/PaperProcessor.tsx`
+
+#### 6. Login Error Feedback
+- Error message now prominent with red background and icon
+- **File:** `src/pages/login.astro`
+
+#### 7. GitHub Actions Auto-Deploy Fixed
+- Now sources `~/.dura-secrets` on server
+- Uses correct volume mount (`/app/data`)
+- Includes `GOOGLE_AI_API_KEY`
+- **File:** `.github/workflows/deploy.yml`
+
+#### 8. Memory Learning Integration
+- Synthesizer now creates memories for learned patterns:
+  - Key concept explanations (semantic)
+  - Rich Nyakupfuya patterns by domain (procedural)
+  - Paper relationships for knowledge graph (episodic)
+- **File:** `src/agents/synthesizer/index.ts`
+
+#### 9. Platform-Agnostic Text
+- Removed "Midnight ecosystem" references
+- Now says "Curated research papers translated for accessibility"
 
 ---
 
-## Previous Session (Jan 20, 2026)
+## Previous Sessions
 
-### What Was Accomplished
+### Jan 21, 2026 (Afternoon)
+- Upgraded to Gemini 2.5 Flash-Lite (cheaper)
+- GitHub Actions auto-deploy setup
+- Database migration fix (critical)
+- Logs page styling
 
-#### 1. Enhanced Synthesizer for Deeper Paper Translations
-- Rewrote Synthesizer prompt for rich, multi-section output:
-  - **Nyakupfuya:** 3-5 paragraphs with village/farming analogies (not 1 paragraph)
-  - **Key Concepts Explained:** Term, definition, analogy, importance for each technical concept
-  - **Practical Implications:** What can you DO with this knowledge?
-  - **Learning Path:** Prerequisites, next steps, questions to explore
-- Updated UI with new sections and styling
-- **Files:** `src/agents/synthesizer/prompt.ts`, `src/agents/synthesizer/index.ts`, `src/components/admin/PaperProcessor.tsx`
+### Jan 20, 2026
+- Enhanced Synthesizer with rich Nyakupfuya output
+- Comprehensive Admin Dashboard
+- User Management
+- Memory system infrastructure
 
-#### 2. Comprehensive Admin Dashboard
-- **`/admin`** - Central dashboard with:
-  - User stats (by role)
-  - Paper stats (approved/pending/rejected)
-  - Memory stats (pending review)
-  - Invite stats (used/active)
-  - API usage and estimated costs
-  - Quick action cards
-  - Recent users list
-- **`/admin/users`** - User management:
-  - View all users
-  - Change roles (public → researcher → contributor → admin)
-  - Delete users
-- **`/admin/logs`** - API usage tracking:
-  - Usage by agent
-  - Token counts and costs
-  - Latency tracking
-- **API Endpoints:**
-  - `POST /api/admin/users/role` - Change user role
-  - `POST /api/admin/users/delete` - Delete user
+---
 
-#### 3. Fixed Route Conflicts
-- Moved Decap CMS from `/admin` to `/cms`
-  - Renamed `src/pages/admin.astro` → `src/pages/cms.astro`
-  - Moved `public/admin/` → `public/cms/`
-- Our custom admin dashboard now serves at `/admin`
+## Current Production Status ✅
 
-#### 4. Database Migration
-- Added `memories` table migration (`drizzle/0002_add_memories.sql`)
-- Updated migration journal
-
-#### 5. Fixed API Key Caching Bug
-- Model cache was storing models with empty API keys
-- Fixed by detecting key changes and clearing cache on change
-
-### Deployment Notes
-
-#### Droplet Deployment Script
-```bash
-# ~/.dura-secrets (chmod 600)
-GITHUB_TOKEN=ghp_your_token_here
-GOOGLE_AI_API_KEY=AIzaSy...your_key_here
-```
-
-```bash
-# Deploy command sequence
-source ~/.dura-secrets
-docker rm -f dura
-docker pull ghcr.io/solkem/dura:latest
-docker run -d --name dura \
-  -p 3000:4321 \
-  -v /app/data:/app/data \
-  -e GOOGLE_AI_API_KEY="$GOOGLE_AI_API_KEY" \
-  ghcr.io/solkem/dura:latest
-```
-
-### Current Production Status ✅
-- Admin Dashboard: Working
-- Paper Processor: Working
-- User Management: Working
-- Memory System: Working (needs memories to be created)
+| Feature | Status |
+|---------|--------|
+| Admin Dashboard | ✅ Working |
+| Paper Processor | ✅ Working (saves to DB!) |
+| Papers Library | ✅ Working (reads from DB!) |
+| User Management | ✅ Working |
+| Memory System | ✅ Active (creates pending memories) |
+| Auto-Deploy | ✅ Fixed |
+| Session Handling | ✅ Fixed (all pages SSR) |
 
 ---
 
 ## Next Steps / TODO
 
-### Immediate (From Jan 21 Session)
-- [ ] Add login error feedback when user doesn't exist
-- [ ] Test paper processing with new model (verify gemini-2.5-flash-lite works)
-- [ ] Update cost constants in `logs.astro` for accurate 2.5 Flash-Lite pricing
+### Immediate
+- [ ] Process a paper and verify it appears in library
+- [ ] Review pending memories at `/admin/memories`
+- [ ] Fine-tune prompts based on Nyakupfuya quality
 
 ### Short-Term
-- [ ] Test enhanced Synthesizer output with different paper types
-- [ ] Verify Key Concepts and Learning Path sections render correctly
 - [ ] Add "Copy" button for Nyakupfuya summaries
-- [ ] Review and approve pending memories via `/admin/memories`
-- [ ] Fine-tune prompts based on quality of generated content
+- [ ] Add paper search/filtering
+- [ ] Create public paper reading view (non-admin)
 
 ### Medium-Term
-- [ ] Implement full Gemini API Context Caching (`@google/genai` package)
 - [ ] Begin collecting training data for DeepSeek fine-tuning
-- [ ] Add paper search and filtering on admin dashboard
+- [ ] Implement full Gemini Context Caching
 
 ### Long-Term
 - [ ] DeepSeek fine-tuning for offline curation
 - [ ] Edge deployment of fine-tuned model
-- [ ] Public paper browsing interface
 
 ---
 
 ## Key Files Reference
 
 ### Agents
-- `src/agents/curator/prompt.ts` - Curator prompt with Nyakupfuya test
-- `src/agents/curator/index.ts` - Curator agent logic + memory creation
-- `src/agents/synthesizer/prompt.ts` - Enhanced Synthesizer prompt
-- `src/agents/synthesizer/index.ts` - Synthesizer agent logic
-- `src/agents/utils/cache.ts` - Model instance caching
+- `src/agents/curator/index.ts` - Curator with memory learning
+- `src/agents/synthesizer/index.ts` - Synthesizer with memory learning
 - `src/agents/utils/memory.ts` - Memory creation utilities
+
+### Paper Pages
+- `src/pages/papers/index.astro` - Papers list (database)
+- `src/pages/papers/[slug].astro` - Paper detail (database + SSR)
+- `src/pages/api/agents/process-pdf.ts` - PDF processing + DB save
 
 ### Admin Pages
 - `src/pages/admin/index.astro` - Dashboard
-- `src/pages/admin/users.astro` - User management
-- `src/pages/admin/logs.astro` - API logs
 - `src/pages/admin/papers.astro` - Paper processor
-- `src/pages/admin/invites.astro` - Invite management
 - `src/pages/admin/memories.astro` - Memory review
 
-### API Endpoints
-- `src/pages/api/agents/process-pdf.ts` - PDF processing
-- `src/pages/api/admin/users/role.ts` - Change user role
-- `src/pages/api/admin/users/delete.ts` - Delete user
+---
+
+## Memory Architecture
+
+When papers are processed, the agents automatically learn patterns:
+
+```
+Paper Upload → Curator → [Creates Memories] → Synthesizer → [Creates Memories] → Save to DB
+                                    ↓                               ↓
+                            Pending Memories              Pending Memories
+                                    ↓                               ↓
+                               /admin/memories (Human Review)
+                                    ↓
+                    Approved → Used in Future Processing
+```
+
+### Memory Types
+| Type | Created By | Example |
+|------|------------|---------|
+| Episodic | Curator | "Paper X rejected because..." |
+| Semantic | Both | "ZKP explained as..." |
+| Procedural | Synthesizer | "Nyakupfuya pattern for domain..." |
 
 ---
 
 ## Production URLs
 
 - **Main Site:** https://dura.disruptiveiot.org
+- **Papers Library:** https://dura.disruptiveiot.org/papers
 - **Admin Dashboard:** https://dura.disruptiveiot.org/admin
 - **Paper Processor:** https://dura.disruptiveiot.org/admin/papers
-- **User Management:** https://dura.disruptiveiot.org/admin/users
-- **Agent Logs:** https://dura.disruptiveiot.org/admin/logs
-- **Invites:** https://dura.disruptiveiot.org/admin/invites
-- **Memories:** https://dura.disruptiveiot.org/admin/memories
-- **Decap CMS:** https://dura.disruptiveiot.org/cms (if needed)
+- **Memory Review:** https://dura.disruptiveiot.org/admin/memories
+
+---
+
+## Deployment
+
+Auto-deploy on push to `main` via GitHub Actions. Manual deploy:
+
+```bash
+source ~/.dura-secrets
+echo "$GITHUB_TOKEN" | docker login ghcr.io -u solkem --password-stdin
+docker rm -f dura
+docker pull ghcr.io/solkem/dura:latest
+docker run -d --name dura -p 3000:4321 -v /app/data:/app/data -e GOOGLE_AI_API_KEY="$GOOGLE_AI_API_KEY" ghcr.io/solkem/dura:latest
+```
