@@ -121,6 +121,18 @@ export function PaperProcessor() {
     }
   };
 
+  const resetForm = () => {
+    setTitle('');
+    setAbstract('');
+    setPdfFile(null);
+    setResult(null);
+    setStatus('');
+    // Reset file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   const canProcess = mode === 'pdf' ? !!pdfFile : !!title.trim();
 
   return (
@@ -236,6 +248,9 @@ export function PaperProcessor() {
             <div className="error">
               <h3>❌ Error</h3>
               <p>{result.error}</p>
+              <button className="action-btn secondary" onClick={resetForm} style={{ marginTop: '1rem' }}>
+                📄 Try Another Paper
+              </button>
             </div>
           )}
 
@@ -245,6 +260,9 @@ export function PaperProcessor() {
               {result.title && <p><strong>Title:</strong> {result.title}</p>}
               <p><strong>Reason:</strong> {result.curator?.curatorNotes}</p>
               <p><strong>Relevance Score:</strong> {result.curator?.relevanceScore}</p>
+              <button className="action-btn secondary" onClick={resetForm} style={{ marginTop: '1rem' }}>
+                📄 Process Another Paper
+              </button>
             </div>
           )}
 
@@ -405,6 +423,25 @@ export function PaperProcessor() {
                   </ul>
                 </div>
               )}
+
+              {/* Action Buttons */}
+              <div className="action-buttons">
+                <button
+                  className="action-btn primary"
+                  onClick={() => {
+                    // Paper is already saved during processing
+                    alert('Paper saved to library!');
+                  }}
+                >
+                  📚 View in Library
+                </button>
+                <button
+                  className="action-btn secondary"
+                  onClick={resetForm}
+                >
+                  📄 Process Another Paper
+                </button>
+              </div>
             </div>
           )}
         </div>
@@ -530,6 +567,42 @@ export function PaperProcessor() {
         .process-btn:disabled {
           opacity: 0.5;
           cursor: not-allowed;
+        }
+        
+        /* Action Buttons */
+        .action-buttons {
+          display: flex;
+          gap: 1rem;
+          margin-top: 2rem;
+          padding-top: 1.5rem;
+          border-top: 1px solid #333;
+        }
+        .action-btn {
+          flex: 1;
+          padding: 0.875rem 1.5rem;
+          border-radius: 8px;
+          font-size: 1rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s;
+          border: none;
+        }
+        .action-btn.primary {
+          background: linear-gradient(135deg, #10b981, #059669);
+          color: white;
+        }
+        .action-btn.primary:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+        .action-btn.secondary {
+          background: #374151;
+          color: white;
+          border: 1px solid #4b5563;
+        }
+        .action-btn.secondary:hover {
+          background: #4b5563;
+          transform: translateY(-2px);
         }
         .result {
           background: #1a1a2e;
