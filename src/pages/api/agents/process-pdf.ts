@@ -2,6 +2,9 @@ import type { APIRoute } from "astro";
 import { extractPdfText, prepareForAnalysis } from "../../../agents/utils/pdf-extract";
 import { curatePaper } from "../../../agents/curator";
 import { synthesizePaper } from "../../../agents/synthesizer";
+import { db } from "../../../db";
+import { papers } from "../../../db/schema";
+import { nanoid } from "nanoid";
 
 export const prerender = false;
 
@@ -59,9 +62,28 @@ export const POST: APIRoute = async (context) => {
             abstract: analysisContent  // Send structured sections instead of just abstract
         });
 
+        // Generate paper ID
+        const paperId = nanoid(12);
+
         if (curatorResult.curatorStatus === "rejected") {
+            // Still save rejected papers but with rejected status
+            await db.insert(papers).values({
+                id: paperId,
+                title,
+                abstract: extractedPaper.abstract || analysisContent.slice(0, 2000),
+                curatorStatus: 'rejected',
+                relevanceScore: curatorResult.relevanceScore,
+                accessibilityScore: curatorResult.accessibilityScore,
+                difficulty: curatorResult.difficulty,
+                domainTags: JSON.stringify(curatorResult.domainTags),
+                ecosystemTags: JSON.stringify(curatorResult.ecosystemTags),
+                curatorNotes: curatorResult.curatorNotes,
+                createdAt: new Date().toISOString(),
+            });
+
             return new Response(JSON.stringify({
                 status: "rejected",
+                paperId,
                 title,
                 extracted: {
                     pageCount: extractedPaper.pageCount,
@@ -81,7 +103,7 @@ export const POST: APIRoute = async (context) => {
         console.log("Running Synthesizer agent...");
         const synthesizerResult = await synthesizePaper({
             paper: {
-                id: `pdf-${Date.now()}`,
+                id: paperId,
                 title,
                 abstract: analysisContent,
                 domainTags: curatorResult.domainTags
@@ -89,8 +111,27 @@ export const POST: APIRoute = async (context) => {
             existingPapers: [] // TODO: fetch from database
         });
 
+        // Save approved paper to database
+        console.log("Saving paper to database...");
+        await db.insert(papers).values({
+            id: paperId,
+            title,
+            abstract: extractedPaper.abstract || analysisContent.slice(0, 2000),
+            curatorStatus: 'approved',
+            relevanceScore: curatorResult.relevanceScore,
+            accessibilityScore: curatorResult.accessibilityScore,
+            difficulty: curatorResult.difficulty,
+            domainTags: JSON.stringify(curatorResult.domainTags),
+            ecosystemTags: JSON.stringify(curatorResult.ecosystemTags),
+            curatorNotes: curatorResult.curatorNotes,
+            synthesizerData: JSON.stringify(synthesizerResult),
+            createdAt: new Date().toISOString(),
+        });
+        console.log(`Paper saved with ID: ${paperId}`);
+
         return new Response(JSON.stringify({
             status: "success",
+            paperId,
             title,
             extracted: {
                 pageCount: extractedPaper.pageCount,
