@@ -1,20 +1,33 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { getCollection } from "astro:content";
+import { db } from "../../db";
+import { papers } from "../../db/schema";
+import { eq } from "drizzle-orm";
 import { StarButton } from "../../components";
 
-export async function getStaticPaths() {
-    const papers = await getCollection("papers");
-    return papers.map((paper) => ({
-        params: { slug: paper.id },
-        props: { paper },
-    }));
+export const prerender = false;
+
+const { slug } = Astro.params;
+
+// Get paper from database
+const paper = await db.select().from(papers).where(eq(papers.id, slug!)).get();
+
+if (!paper) {
+    return Astro.redirect("/papers");
 }
 
-const { paper } = Astro.props;
+// Parse synthesizer data if it exists
+let synthesizerData = null;
+if (paper.synthesizerData) {
+    try {
+        synthesizerData = JSON.parse(paper.synthesizerData);
+    } catch (e) {
+        console.error("Failed to parse synthesizer data:", e);
+    }
+}
 ---
 
-<BaseLayout title={`${paper.data.title} | Papers`}>
+<BaseLayout title={`${paper.title} | Papers`}>
     <article class="max-w-4xl mx-auto mt-12 mb-24 px-4">
         <header class="mb-12 border-b border-stone-100 pb-12">
             <div class="flex justify-between items-start mb-6">
@@ -29,36 +42,65 @@ const { paper } = Astro.props;
             <h1
                 class="text-4xl md:text-5xl font-extrabold text-stone-900 mb-8 leading-tight"
             >
-                {paper.data.title}
+                {paper.title}
             </h1>
 
             <div
                 class="grid grid-cols-1 sm:grid-cols-2 gap-8 text-sm text-stone-600 bg-stone-50 p-6 rounded-2xl border border-stone-100"
             >
-                <div>
-                    <span class="block font-bold text-stone-900 mb-1"
-                        >Authors</span
-                    >
-                    {paper.data.authors.map((a) => a.name).join(", ")}
-                </div>
-                <div>
-                    <span class="block font-bold text-stone-900 mb-1">Year</span
-                    >
-                    {paper.data.year || "N/A"}
-                </div>
                 {
-                    paper.data.arxivId && (
+                    paper.authors && (
+                        <div>
+                            <span class="block font-bold text-stone-900 mb-1">
+                                Authors
+                            </span>
+                            {paper.authors}
+                        </div>
+                    )
+                }
+                {
+                    paper.year && (
+                        <div>
+                            <span class="block font-bold text-stone-900 mb-1">
+                                Year
+                            </span>
+                            {paper.year}
+                        </div>
+                    )
+                }
+                {
+                    paper.arxivId && (
                         <div class="sm:col-span-2">
                             <span class="block font-bold text-stone-900 mb-1">
                                 arXiv
                             </span>
                             <a
-                                href={`https://arxiv.org/abs/${paper.data.arxivId}`}
+                                href={`https://arxiv.org/abs/${paper.arxivId}`}
                                 target="_blank"
                                 class="text-amber-700 hover:underline break-all"
                             >
-                                {paper.data.arxivId}
+                                {paper.arxivId}
                             </a>
+                        </div>
+                    )
+                }
+                {
+                    paper.curatorStatus && (
+                        <div>
+                            <span class="block font-bold text-stone-900 mb-1">
+                                Status
+                            </span>
+                            <span
+                                class={`px-2 py-1 rounded text-xs font-bold ${
+                                    paper.curatorStatus === "approved"
+                                        ? "bg-green-100 text-green-800"
+                                        : paper.curatorStatus === "pending"
+                                          ? "bg-yellow-100 text-yellow-800"
+                                          : "bg-red-100 text-red-800"
+                                }`}
+                            >
+                                {paper.curatorStatus}
+                            </span>
                         </div>
                     )
                 }
@@ -66,15 +108,83 @@ const { paper } = Astro.props;
         </header>
 
         <div class="prose prose-lg prose-stone max-w-none">
-            <h3 class="text-xl font-bold text-stone-900 mb-4">Abstract</h3>
-            <p
-                class="text-stone-700 leading-relaxed text-lg mb-8 bg-white p-6 border-l-4 border-amber-500 shadow-sm italic"
-            >
-                {paper.data.abstract}
-            </p>
+            {
+                paper.abstract && (
+                    <>
+                        <h3 class="text-xl font-bold text-stone-900 mb-4">
+                            Abstract
+                        </h3>
+                        <p class="text-stone-700 leading-relaxed text-lg mb-8 bg-white p-6 border-l-4 border-amber-500 shadow-sm italic">
+                            {paper.abstract}
+                        </p>
+                    </>
+                )
+            }
 
             {
-                /* If there was content body, render it here. For now mostly metadata */
+                synthesizerData?.summaries?.nyakupfuya && (
+                    <div class="my-8 p-6 bg-amber-50 border border-amber-200 rounded-xl">
+                        <h3 class="text-xl font-bold text-amber-900 mb-4 flex items-center gap-2">
+                            🌾 Nyakupfuya (Plain Language Summary)
+                        </h3>
+                        <p class="text-stone-800 leading-relaxed text-lg whitespace-pre-line">
+                            {synthesizerData.summaries.nyakupfuya}
+                        </p>
+                    </div>
+                )
+            }
+
+            {
+                synthesizerData?.keyConcepts &&
+                    synthesizerData.keyConcepts.length > 0 && (
+                        <div class="my-8">
+                            <h3 class="text-xl font-bold text-stone-900 mb-4">
+                                🧠 Key Concepts
+                            </h3>
+                            <div class="grid gap-4">
+                                {synthesizerData.keyConcepts.map(
+                                    (concept: any) => (
+                                        <div class="p-4 bg-white border border-stone-200 rounded-lg shadow-sm">
+                                            <h4 class="font-bold text-stone-900 mb-2">
+                                                {concept.term}
+                                            </h4>
+                                            <p class="text-stone-700 text-sm mb-2">
+                                                {concept.simpleDefinition}
+                                            </p>
+                                            {concept.analogy && (
+                                                <p class="text-stone-600 text-sm italic">
+                                                    💡 {concept.analogy}
+                                                </p>
+                                            )}
+                                        </div>
+                                    ),
+                                )}
+                            </div>
+                        </div>
+                    )
+            }
+
+            {
+                synthesizerData?.practicalImplications &&
+                    synthesizerData.practicalImplications.length > 0 && (
+                        <div class="my-8">
+                            <h3 class="text-xl font-bold text-stone-900 mb-4">
+                                💪 Practical Implications
+                            </h3>
+                            <ul class="space-y-2">
+                                {synthesizerData.practicalImplications.map(
+                                    (impl: string) => (
+                                        <li class="flex items-start gap-2 text-stone-700">
+                                            <span class="text-green-600">
+                                                ✓
+                                            </span>
+                                            {impl}
+                                        </li>
+                                    ),
+                                )}
+                            </ul>
+                        </div>
+                    )
             }
         </div>
 
