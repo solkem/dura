@@ -1,11 +1,15 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import { InteractiveFAQ } from '../components';
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { InteractiveFAQ } from "../components";
+
+export const prerender = false;
 ---
 
 <BaseLayout title="FAQ | Midnight Learning">
   <div class="max-w-4xl mx-auto">
-    <h1 class="text-3xl font-bold text-slate-100 mb-8">Frequently Asked Questions</h1>
+    <h1 class="text-3xl font-bold text-slate-100 mb-8">
+      Frequently Asked Questions
+    </h1>
     <InteractiveFAQ client:load />
   </div>
 </BaseLayout>

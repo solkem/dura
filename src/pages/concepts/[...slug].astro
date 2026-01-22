@@ -5,7 +5,7 @@ import { ProjectBadge, TraceabilityMatrix } from "../../components";
 import Annotation from "../../components/Annotation";
 import Comments from "../../components/Comments";
 
-export const prerender = true;
+export const prerender = false;
 
 export async function getStaticPaths() {
   const concepts = await getCollection("concepts");

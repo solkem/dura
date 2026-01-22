@@ -1,6 +1,8 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 
+export const prerender = false;
+
 // Handle GET request - show form or redirect if already logged in
 if (Astro.locals.user) {
     return Astro.redirect("/");

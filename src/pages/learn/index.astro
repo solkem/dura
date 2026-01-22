@@ -2,36 +2,39 @@
 import { getCollection } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 
-export const prerender = true;
+export const prerender = false;
 
 const learnEntries = await getCollection("learn");
 
 // Group entries by domain
 const domains = {
-  'midnight': {
-    name: 'Midnight & ZK',
-    description: 'Zero-knowledge proofs, privacy-preserving smart contracts, and cryptographic protocols.',
-    icon: '🌙',
-    color: 'violet'
+  midnight: {
+    name: "Midnight & ZK",
+    description:
+      "Zero-knowledge proofs, privacy-preserving smart contracts, and cryptographic protocols.",
+    icon: "🌙",
+    color: "violet",
   },
-  'federated-learning': {
-    name: 'Federated Learning',
-    description: 'Privacy-preserving machine learning where the model comes to the data.',
-    icon: '🧠',
-    color: 'blue'
+  "federated-learning": {
+    name: "Federated Learning",
+    description:
+      "Privacy-preserving machine learning where the model comes to the data.",
+    icon: "🧠",
+    color: "blue",
   },
-  'iot-edge': {
-    name: 'IoT & Edge',
-    description: 'Trustless architectures for IoT devices and edge computing.',
-    icon: '📡',
-    color: 'emerald'
+  "iot-edge": {
+    name: "IoT & Edge",
+    description: "Trustless architectures for IoT devices and edge computing.",
+    icon: "📡",
+    color: "emerald",
   },
-  'agentic-ai': {
-    name: 'Agentic AI',
-    description: 'Autonomous AI agents with verifiable actions and accountable behavior.',
-    icon: '🤖',
-    color: 'amber'
-  }
+  "agentic-ai": {
+    name: "Agentic AI",
+    description:
+      "Autonomous AI agents with verifiable actions and accountable behavior.",
+    icon: "🤖",
+    color: "amber",
+  },
 };
 
 // Count entries per domain
@@ -42,10 +45,12 @@ for (const entry of learnEntries) {
 }
 
 const colorClasses = {
-  violet: 'bg-violet-50 border-violet-200 hover:border-violet-400 text-violet-700',
-  blue: 'bg-blue-50 border-blue-200 hover:border-blue-400 text-blue-700',
-  emerald: 'bg-emerald-50 border-emerald-200 hover:border-emerald-400 text-emerald-700',
-  amber: 'bg-amber-50 border-amber-200 hover:border-amber-400 text-amber-700'
+  violet:
+    "bg-violet-50 border-violet-200 hover:border-violet-400 text-violet-700",
+  blue: "bg-blue-50 border-blue-200 hover:border-blue-400 text-blue-700",
+  emerald:
+    "bg-emerald-50 border-emerald-200 hover:border-emerald-400 text-emerald-700",
+  amber: "bg-amber-50 border-amber-200 hover:border-amber-400 text-amber-700",
 };
 ---
 
@@ -56,64 +61,84 @@ const colorClasses = {
         Learn
       </h1>
       <p class="text-xl text-slate-600 max-w-2xl mx-auto">
-        Industry-grade knowledge for privacy-preserving systems. Explore concepts, protocols, and implementations.
+        Industry-grade knowledge for privacy-preserving systems. Explore
+        concepts, protocols, and implementations.
       </p>
     </div>
 
     <div class="grid md:grid-cols-2 gap-6">
-      {Object.entries(domains).map(([key, domain]) => (
-        <a
-          href={`/learn/${key}`}
-          class={`block p-8 rounded-2xl border-2 transition-all ${colorClasses[domain.color]} hover:shadow-lg`}
-        >
-          <div class="flex items-center gap-4 mb-4">
-            <span class="text-4xl">{domain.icon}</span>
-            <div>
-              <h2 class="text-2xl font-bold">{domain.name}</h2>
-              <span class="text-sm opacity-75">
-                {domainCounts[key] || 0} {(domainCounts[key] || 0) === 1 ? 'item' : 'items'}
-              </span>
+      {
+        Object.entries(domains).map(([key, domain]) => (
+          <a
+            href={`/learn/${key}`}
+            class={`block p-8 rounded-2xl border-2 transition-all ${colorClasses[domain.color]} hover:shadow-lg`}
+          >
+            <div class="flex items-center gap-4 mb-4">
+              <span class="text-4xl">{domain.icon}</span>
+              <div>
+                <h2 class="text-2xl font-bold">{domain.name}</h2>
+                <span class="text-sm opacity-75">
+                  {domainCounts[key] || 0}{" "}
+                  {(domainCounts[key] || 0) === 1 ? "item" : "items"}
+                </span>
+              </div>
             </div>
-          </div>
-          <p class="text-slate-600">{domain.description}</p>
-        </a>
-      ))}
+            <p class="text-slate-600">{domain.description}</p>
+          </a>
+        ))
+      }
     </div>
 
     <div class="mt-16 pt-12 border-t border-slate-100">
       <h2 class="text-2xl font-bold text-stone-900 mb-8">All Content</h2>
       <div class="space-y-4">
-        {learnEntries.map((entry) => (
-          <a
-            href={`/learn/${entry.data.domain}/${entry.data.type}s/${entry.slug.split('/').pop()}`}
-            class="block p-6 bg-white border border-slate-200 rounded-xl hover:border-amber-300 hover:shadow-md transition-all"
-          >
-            <div class="flex items-center justify-between">
-              <div>
-                <h3 class="text-lg font-bold text-slate-900">{entry.data.title}</h3>
-                <p class="text-sm text-slate-500 mt-1">{entry.data.description}</p>
+        {
+          learnEntries.map((entry) => (
+            <a
+              href={`/learn/${entry.data.domain}/${entry.data.type}s/${entry.slug.split("/").pop()}`}
+              class="block p-6 bg-white border border-slate-200 rounded-xl hover:border-amber-300 hover:shadow-md transition-all"
+            >
+              <div class="flex items-center justify-between">
+                <div>
+                  <h3 class="text-lg font-bold text-slate-900">
+                    {entry.data.title}
+                  </h3>
+                  <p class="text-sm text-slate-500 mt-1">
+                    {entry.data.description}
+                  </p>
+                </div>
+                <div class="flex items-center gap-3">
+                  <span
+                    class={`px-3 py-1 text-xs font-medium rounded-full capitalize ${
+                      entry.data.type === "concept"
+                        ? "bg-sky-100 text-sky-700"
+                        : entry.data.type === "protocol"
+                          ? "bg-violet-100 text-violet-700"
+                          : entry.data.type === "implementation"
+                            ? "bg-emerald-100 text-emerald-700"
+                            : "bg-orange-100 text-orange-700"
+                    }`}
+                  >
+                    {entry.data.type}
+                  </span>
+                  <span
+                    class={`px-3 py-1 text-xs font-medium rounded-full capitalize ${
+                      entry.data.difficulty === "beginner"
+                        ? "bg-green-100 text-green-700"
+                        : entry.data.difficulty === "intermediate"
+                          ? "bg-yellow-100 text-yellow-700"
+                          : entry.data.difficulty === "advanced"
+                            ? "bg-orange-100 text-orange-700"
+                            : "bg-red-100 text-red-700"
+                    }`}
+                  >
+                    {entry.data.difficulty}
+                  </span>
+                </div>
               </div>
-              <div class="flex items-center gap-3">
-                <span class={`px-3 py-1 text-xs font-medium rounded-full capitalize ${
-                  entry.data.type === 'concept' ? 'bg-sky-100 text-sky-700' :
-                  entry.data.type === 'protocol' ? 'bg-violet-100 text-violet-700' :
-                  entry.data.type === 'implementation' ? 'bg-emerald-100 text-emerald-700' :
-                  'bg-orange-100 text-orange-700'
-                }`}>
-                  {entry.data.type}
-                </span>
-                <span class={`px-3 py-1 text-xs font-medium rounded-full capitalize ${
-                  entry.data.difficulty === 'beginner' ? 'bg-green-100 text-green-700' :
-                  entry.data.difficulty === 'intermediate' ? 'bg-yellow-100 text-yellow-700' :
-                  entry.data.difficulty === 'advanced' ? 'bg-orange-100 text-orange-700' :
-                  'bg-red-100 text-red-700'
-                }`}>
-                  {entry.data.difficulty}
-                </span>
-              </div>
-            </div>
-          </a>
-        ))}
+            </a>
+          ))
+        }
       </div>
     </div>
   </div>

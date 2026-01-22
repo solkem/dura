@@ -5,19 +5,19 @@ import { ProjectBadge, TraceabilityMatrix } from "../../../components";
 import Annotation from "../../../components/Annotation";
 import Comments from "../../../components/Comments";
 
-export const prerender = true;
+export const prerender = false;
 
 export async function getStaticPaths() {
   const learnEntries = await getCollection("learn");
   return learnEntries.map((entry) => {
     // entry.slug format: "domain/type/filename" e.g. "midnight/concepts/zkp"
-    const slugParts = entry.slug.split('/');
+    const slugParts = entry.slug.split("/");
     const filename = slugParts[slugParts.length - 1];
-    
+
     return {
-      params: { 
+      params: {
         domain: entry.data.domain,
-        slug: `${entry.data.type}s/${filename}`  // concepts/zkp, protocols/brace
+        slug: `${entry.data.type}s/${filename}`, // concepts/zkp, protocols/brace
       },
       props: { entry },
     };
@@ -28,17 +28,17 @@ const { entry } = Astro.props;
 const { Content } = await entry.render();
 
 const typeColors = {
-  concept: 'bg-sky-100 text-sky-700',
-  protocol: 'bg-violet-100 text-violet-700',
-  implementation: 'bg-emerald-100 text-emerald-700',
-  'case-study': 'bg-orange-100 text-orange-700'
+  concept: "bg-sky-100 text-sky-700",
+  protocol: "bg-violet-100 text-violet-700",
+  implementation: "bg-emerald-100 text-emerald-700",
+  "case-study": "bg-orange-100 text-orange-700",
 };
 
 const domainInfo = {
-  'midnight': { name: 'Midnight & ZK', icon: '🌙' },
-  'federated-learning': { name: 'Federated Learning', icon: '🧠' },
-  'iot-edge': { name: 'IoT & Edge', icon: '📡' },
-  'agentic-ai': { name: 'Agentic AI', icon: '🤖' }
+  midnight: { name: "Midnight & ZK", icon: "🌙" },
+  "federated-learning": { name: "Federated Learning", icon: "🧠" },
+  "iot-edge": { name: "IoT & Edge", icon: "📡" },
+  "agentic-ai": { name: "Agentic AI", icon: "🤖" },
 };
 
 const domain = entry.data.domain;
@@ -52,16 +52,19 @@ const dInfo = domainInfo[domain];
         <a
           href="/learn"
           class="font-medium text-slate-500 hover:text-amber-600 transition-colors"
-        >&larr; Learn</a>
+          >&larr; Learn</a
+        >
         <span class="text-slate-300">/</span>
         <a
           href={`/learn/${domain}`}
           class="font-medium text-slate-500 hover:text-amber-600 transition-colors"
-        >{dInfo.icon} {dInfo.name}</a>
+          >{dInfo.icon} {dInfo.name}</a
+        >
         <span class="text-slate-300">/</span>
         <span
           class={`font-bold uppercase tracking-wider px-2 py-0.5 rounded ${typeColors[entry.data.type]}`}
-        >{entry.data.type}</span>
+          >{entry.data.type}</span
+        >
       </div>
 
       <h1 class="text-5xl font-extrabold text-slate-900 mb-6 tracking-tight">
@@ -71,12 +74,16 @@ const dInfo = domainInfo[domain];
       <div
         class="flex items-center flex-wrap gap-6 text-sm text-slate-500 border-b border-slate-100 pb-8"
       >
-        {entry.data.projects && entry.data.projects.length > 0 && (
-          <div class="flex gap-2 items-center">
-            <span class="font-medium text-slate-400">Related Projects:</span>
-            {entry.data.projects.map((p) => <ProjectBadge project={p} />)}
-          </div>
-        )}
+        {
+          entry.data.projects && entry.data.projects.length > 0 && (
+            <div class="flex gap-2 items-center">
+              <span class="font-medium text-slate-400">Related Projects:</span>
+              {entry.data.projects.map((p) => (
+                <ProjectBadge project={p} />
+              ))}
+            </div>
+          )
+        }
         <span class="text-slate-300">•</span>
         <span class="flex items-center gap-2">
           <span class="font-medium text-slate-400">Difficulty:</span>
@@ -89,16 +96,21 @@ const dInfo = domainInfo[domain];
                   : entry.data.difficulty === "advanced"
                     ? "bg-orange-100 text-orange-700"
                     : "bg-red-100 text-red-700"
-            }`}>{entry.data.difficulty}</span>
+            }`}>{entry.data.difficulty}</span
+          >
         </span>
         <span class="text-slate-300">•</span>
         <span>Updated: {entry.data.lastUpdated.toLocaleDateString()}</span>
-        {entry.data.tier === 'premium' && (
-          <>
-            <span class="text-slate-300">•</span>
-            <span class="px-2 py-0.5 bg-amber-100 text-amber-700 rounded font-medium">Premium</span>
-          </>
-        )}
+        {
+          entry.data.tier === "premium" && (
+            <>
+              <span class="text-slate-300">•</span>
+              <span class="px-2 py-0.5 bg-amber-100 text-amber-700 rounded font-medium">
+                Premium
+              </span>
+            </>
+          )
+        }
       </div>
     </div>
 
@@ -117,22 +129,24 @@ const dInfo = domainInfo[domain];
 
     <Comments client:visible />
 
-    {entry.data.related && entry.data.related.length > 0 && (
-      <div class="mt-20 pt-10 border-t border-slate-100">
-        <h3 class="text-lg font-bold text-slate-900 mb-6">
-          Explore Related Content
-        </h3>
-        <div class="flex flex-wrap gap-3">
-          {entry.data.related.map((slug) => (
-            <a
-              href={`/learn/${domain}/concepts/${slug}`}
-              class="px-4 py-2 bg-white border border-slate-200 rounded-full text-sm font-medium text-slate-600 hover:border-amber-300 hover:text-amber-700 hover:shadow-sm transition-all"
-            >
-              {slug}
-            </a>
-          ))}
+    {
+      entry.data.related && entry.data.related.length > 0 && (
+        <div class="mt-20 pt-10 border-t border-slate-100">
+          <h3 class="text-lg font-bold text-slate-900 mb-6">
+            Explore Related Content
+          </h3>
+          <div class="flex flex-wrap gap-3">
+            {entry.data.related.map((slug) => (
+              <a
+                href={`/learn/${domain}/concepts/${slug}`}
+                class="px-4 py-2 bg-white border border-slate-200 rounded-full text-sm font-medium text-slate-600 hover:border-amber-300 hover:text-amber-700 hover:shadow-sm transition-all"
+              >
+                {slug}
+              </a>
+            ))}
+          </div>
         </div>
-      </div>
-    )}
+      )
+    }
   </div>
 </BaseLayout>
