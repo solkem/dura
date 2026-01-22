@@ -8,6 +8,7 @@
 import { generateJSONWithCache } from '../utils/cache';
 import { generateJSON } from '../utils/gemini';
 import { logAgentCall, startTimer } from '../utils/logger';
+import { createPendingMemory } from '../utils/memory';
 import { SYNTHESIZER_PROMPT } from './prompt';
 
 // Feature flag: Enable context caching
@@ -111,5 +112,75 @@ Generate summaries (especially a good nyakupfuya!) and identify any relationship
         latencyMs: getElapsed(),
     });
 
+    // Learn from synthesis patterns
+    if (ENABLE_MEMORY_LEARNING) {
+        await learnFromSynthesis(input, result);
+    }
+
     return result;
+}
+
+// Feature flag: Enable automatic memory creation
+const ENABLE_MEMORY_LEARNING = true;
+
+/**
+ * Extract learnings from synthesis results and create pending memories
+ */
+async function learnFromSynthesis(input: SynthesizerInput, result: SynthesizerOutput): Promise<void> {
+    try {
+        // Pattern 1: Key concepts that need explanation
+        if (result.keyConcepts && result.keyConcepts.length > 0) {
+            for (const concept of result.keyConcepts.slice(0, 2)) { // Limit to top 2
+                const observation = `Term "${concept.term}" explained as: "${concept.simpleDefinition}". Analogy: "${concept.analogy}"`;
+
+                await createPendingMemory({
+                    type: 'semantic',
+                    content: observation,
+                    confidence: 0.6,
+                    sourceAgent: 'synthesizer',
+                    evidence: {
+                        paperIds: [input.paper.id],
+                        observations: [concept.whyItMatters]
+                    }
+                });
+            }
+        }
+
+        // Pattern 2: Good nyakupfuya patterns (if summary is rich)
+        if (result.summaries.nyakupfuya && result.summaries.nyakupfuya.length > 500) {
+            const firstParagraph = result.summaries.nyakupfuya.split('\n\n')[0] || '';
+            const observation = `Rich Nyakupfuya pattern for domain "${input.paper.domainTags.join(', ')}": "${firstParagraph.slice(0, 200)}..."`;
+
+            await createPendingMemory({
+                type: 'procedural',
+                content: observation,
+                confidence: 0.5,
+                sourceAgent: 'synthesizer',
+                evidence: {
+                    paperIds: [input.paper.id]
+                }
+            });
+        }
+
+        // Pattern 3: Paper relationships for knowledge graph
+        if (result.relatedPapers && result.relatedPapers.length > 0) {
+            for (const rel of result.relatedPapers) {
+                const observation = `Paper "${input.paper.title.slice(0, 40)}..." ${rel.relationship} "${rel.paperId}" (${Math.round(rel.strength * 100)}% strength): ${rel.explanation}`;
+
+                await createPendingMemory({
+                    type: 'episodic',
+                    content: observation,
+                    confidence: rel.strength,
+                    sourceAgent: 'synthesizer',
+                    evidence: {
+                        paperIds: [input.paper.id, rel.paperId]
+                    }
+                });
+            }
+        }
+
+    } catch (error) {
+        // Don't fail synthesis if memory creation fails
+        console.error('[Synthesizer] Memory learning failed:', error);
+    }
 }
