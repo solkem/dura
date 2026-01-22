@@ -429,8 +429,11 @@ export function PaperProcessor() {
                 <button
                   className="action-btn primary"
                   onClick={() => {
-                    // Paper is already saved during processing
-                    alert('Paper saved to library!');
+                    if (result.paperId) {
+                      window.location.href = `/papers/${result.paperId}`;
+                    } else {
+                      window.location.href = '/papers';
+                    }
                   }}
                 >
                   📚 View in Library
