@@ -10,6 +10,8 @@ on:
       - 'package*.json'
       - 'astro.config.mjs'
       - 'Dockerfile'
+      - 'drizzle/**'
+      - '.github/workflows/**'
   workflow_dispatch:
 
 env:
@@ -55,26 +57,29 @@ jobs:
           username: ${{ secrets.DO_USERNAME }}
           key: ${{ secrets.DO_SSH_KEY }}
           script: |
-            # Login to GHCR on the server
-            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            # Source secrets from file on server
+            source ~/.dura-secrets
+            
+            # Login to GHCR using stored token
+            echo "$GITHUB_TOKEN" | docker login ghcr.io -u solkem --password-stdin
 
             # Pull the new image
-            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            docker pull ghcr.io/solkem/dura:latest
 
             # Stop and remove existing container (if any)
             docker stop dura || true
             docker rm dura || true
 
-            # Run new container
-            # Mapping host port 3000 to container port 4321
+            # Run new container with correct volume mount
             docker run -d \
               --name dura \
               --restart unless-stopped \
               -p 3000:4321 \
-              -v dura_data:/app/data \
+              -v /app/data:/app/data \
               -e NODE_ENV=production \
               -e DB_URL=/app/data/dura.db \
-              ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+              -e GOOGLE_AI_API_KEY="$GOOGLE_AI_API_KEY" \
+              ghcr.io/solkem/dura:latest
 
-            # Cleanup
+            # Cleanup old images
             docker image prune -f
