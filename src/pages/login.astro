@@ -51,9 +51,12 @@ const error = url.searchParams.get("error");
 
             {
                 error && (
-                    <p class="text-red-600 text-sm text-center">
-                        {decodeURIComponent(error)}
-                    </p>
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-3 mt-2">
+                        <p class="text-red-700 text-sm text-center font-medium flex items-center justify-center gap-2">
+                            <span>⚠️</span>
+                            {decodeURIComponent(error)}
+                        </p>
+                    </div>
                 )
             }
 
