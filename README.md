@@ -2,7 +2,7 @@
 
 > **Research documentation and collaboration platform for privacy-preserving technology**
 
-A living knowledge base making complex science and technology accessible to everyone — inspired by the spirit of Dr. Alex Magaisa's Big Saturday Read.
+A living knowledge base making complex science and technology accessible to everyone, inspired by the spirit of Dr. Alex Magaisa's Big Saturday Read.
 
 **Live Site**: [https://dura.disruptiveiot.org](https://dura.disruptiveiot.org)
 
@@ -10,11 +10,11 @@ A living knowledge base making complex science and technology accessible to ever
 
 ## 🎯 Purpose
 
-Dura is part of the **Disruptive IoT** ecosystem exploring **The Economy of Things (EoT)** — the concept of IoT devices becoming economic participants, not just data collectors.
+Dura is part of the **Disruptive IoT**, exploring **The Economy of Things (EoT)**, the concept of IoT devices becoming economic participants, not just data collectors.
 
 > *"IoT connected devices. EoT disrupts how they earn."*
 
-When devices become economic actors—with wallets, the ability to transact, and autonomous decision-making—everything changes. Dura documents the convergence of:
+When devices become economic actors—with wallets, the ability to transact, and autonomous decision-making, everything changes. Dura scientifically uses AI agents to document the convergence of:
 
 - **Blockchain** — Economic Agency (devices with wallets)
 - **AI** — Cognitive Agency (devices that think)
