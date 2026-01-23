@@ -1,0 +1,123 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+export const prerender = false;
+
+const projects = await getCollection("projects");
+---
+
+<BaseLayout title="Case Studies | Dura — The Knowledge Granary">
+    <div class="max-w-5xl mx-auto">
+        <div class="text-center mb-16">
+            <h1
+                class="text-5xl font-extrabold text-stone-900 mb-6 tracking-tight"
+            >
+                Case Studies
+            </h1>
+            <p class="text-xl text-slate-600 max-w-2xl mx-auto">
+                Real-world applications of privacy-preserving technology. See
+                how abstract research translates into concrete solutions for
+                citizen scientists and communities.
+            </p>
+        </div>
+
+        <div class="mb-12 p-8 bg-amber-50 border border-amber-200 rounded-2xl">
+            <h2
+                class="text-2xl font-bold text-amber-800 mb-4 flex items-center gap-2"
+            >
+                🌾 From Theory to Practice
+            </h2>
+            <p class="text-stone-700 leading-relaxed">
+                Each case study demonstrates how the research papers in our
+                library inspired practical solutions. These projects show the <strong
+                    >Nyakupfuya</strong
+                > philosophy in action — making complex research accessible and useful
+                for real people.
+            </p>
+        </div>
+
+        <div class="grid gap-8">
+            {
+                projects.map((project) => {
+                    const isEdgechain = project.slug === "edgechain";
+                    const isMsingi = project.slug === "msingi";
+                    const isNdani = project.slug === "ndani";
+
+                    const colorClass = isEdgechain
+                        ? "border-emerald-200 hover:border-emerald-400 hover:shadow-emerald-100"
+                        : isMsingi
+                          ? "border-amber-200 hover:border-amber-400 hover:shadow-amber-100"
+                          : "border-violet-200 hover:border-violet-400 hover:shadow-violet-100";
+
+                    const textColor = isEdgechain
+                        ? "text-emerald-700"
+                        : isMsingi
+                          ? "text-amber-700"
+                          : "text-violet-700";
+
+                    const bgColor = isEdgechain
+                        ? "bg-emerald-50"
+                        : isMsingi
+                          ? "bg-amber-50"
+                          : "bg-violet-50";
+
+                    return (
+                        <a
+                            href={`/case-studies/${project.slug}`}
+                            class={`group block p-8 rounded-2xl bg-white border-2 ${colorClass} hover:shadow-xl transition-all duration-300`}
+                        >
+                            <div class="flex items-start justify-between">
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-3 mb-4">
+                                        <h2
+                                            class={`text-2xl font-bold ${textColor} group-hover:translate-x-1 transition-transform`}
+                                        >
+                                            {project.data.title} &rarr;
+                                        </h2>
+                                        <span
+                                            class={`px-3 py-1 text-xs font-bold uppercase tracking-wider ${bgColor} ${textColor} rounded-full`}
+                                        >
+                                            {project.data.status}
+                                        </span>
+                                    </div>
+                                    <p class="text-slate-600 text-lg mb-4">
+                                        {project.data.tagline}
+                                    </p>
+                                    <div class="flex flex-wrap gap-2">
+                                        {project.data.domains?.map(
+                                            (domain: string) => (
+                                                <span class="px-3 py-1 bg-slate-100 text-slate-600 text-sm font-medium rounded-full">
+                                                    {domain}
+                                                </span>
+                                            ),
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    );
+                })
+            }
+        </div>
+
+        <div
+            class="mt-16 p-8 bg-slate-50 border border-slate-200 rounded-2xl text-center"
+        >
+            <h3 class="text-xl font-bold text-slate-800 mb-3">
+                Building with baeIoT?
+            </h3>
+            <p class="text-slate-600 mb-4">
+                If you're working on a privacy-preserving project inspired by
+                research in our library, we'd love to feature it as a case
+                study.
+            </p>
+            <a
+                href="mailto:contact@disruptiveiot.org"
+                class="inline-block px-6 py-3 bg-stone-900 text-white font-medium rounded-full hover:bg-stone-800 transition-colors"
+            >
+                Submit Your Project
+            </a>
+        </div>
+    </div>
+</BaseLayout>
