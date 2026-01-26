@@ -29,6 +29,10 @@ export async function generateJSON<T>(
   systemPrompt: string,
   userPrompt: string
 ): Promise<{ result: T; usage: { tokensIn: number; tokensOut: number } }> {
+  /*
+   * Changing model to gemini-1.5-flash-002 as it seems to be the most stable available model.
+   * If this fails with 404, we might need to check if the API key has access to it.
+   */
   const model = getGenAI().getGenerativeModel({
     model: 'gemini-2.5-flash-lite',
     generationConfig: {
