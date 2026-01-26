@@ -8,11 +8,20 @@ import { PaperFeed } from "../../components/papers/PaperFeed";
 export const prerender = false;
 
 // Get approved papers from database
-const dbPapers = await db
-    .select()
-    .from(papers)
-    .where(eq(papers.curatorStatus, "approved"))
-    .orderBy(desc(papers.createdAt));
+let dbPapers: (typeof papers.$inferSelect)[] = [];
+try {
+    console.log("[Papers] Fetching papers from DB...");
+    dbPapers = await db
+        .select()
+        .from(papers)
+        .where(eq(papers.curatorStatus, "approved"))
+        .orderBy(desc(papers.createdAt));
+    console.log(`[Papers] Found ${dbPapers.length} papers`);
+} catch (error) {
+    console.error("[Papers] DB Fetch Error:", error);
+    // Don't crash the page, just show empty list
+    dbPapers = [];
+}
 ---
 
 <BaseLayout
