@@ -6,6 +6,8 @@ import { papers, paperRelations } from '../../../db/schema';
 import { eq, ne, and } from 'drizzle-orm';
 import { nanoid } from 'nanoid';
 
+export const prerender = false;
+
 /**
  * Full paper processing pipeline:
  * 1. Curate (evaluate relevance, difficulty, tags)
