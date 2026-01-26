@@ -75,6 +75,7 @@ export const papers = sqliteTable('papers', {
     summaryParagraph: text('summary_paragraph'),
     summaryNyakupfuya: text('summary_nyakupfuya'),
     prerequisites: text('prerequisites'),   // JSON array of paper IDs
+    synthesizerData: text('synthesizer_data'), // Full JSON output from synthesizer
 
     // Metadata
     processedAt: text('processed_at'),

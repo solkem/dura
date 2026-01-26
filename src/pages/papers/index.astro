@@ -3,6 +3,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import { db } from "../../db";
 import { papers } from "../../db/schema";
 import { desc, eq } from "drizzle-orm";
+import { PaperFeed } from "../../components/papers/PaperFeed";
 
 export const prerender = false;
 
@@ -14,96 +15,22 @@ const dbPapers = await db
     .orderBy(desc(papers.createdAt));
 ---
 
-<BaseLayout title="Research Papers | Dura">
-    <div class="max-w-4xl mx-auto mt-12 mb-20 px-4">
-        <h1 class="text-4xl font-bold text-stone-900 mb-4">Research Papers</h1>
-        <p class="text-xl text-stone-600 mb-12 max-w-2xl">
-            Curated research papers translated for accessibility using
-            AI-powered summarization.
-        </p>
+<BaseLayout
+    title="Research Papers | Dura"
+    description="A curated library of research papers translated for accessibility."
+>
+    <div class="max-w-5xl mx-auto mt-12 mb-20 px-4">
+        <header class="mb-12 text-center md:text-left">
+            <h1 class="text-5xl font-bold text-stone-900 mb-6 tracking-tight">
+                Research Library
+            </h1>
+            <p class="text-xl text-stone-600 max-w-2xl leading-relaxed">
+                Curated research papers translated for accessibility. Explore
+                concepts in Privacy, AI, and Edge Computing through the lens of
+                local context.
+            </p>
+        </header>
 
-        {
-            dbPapers.length === 0 ? (
-                <div class="text-center py-20 bg-stone-50 rounded-2xl border border-stone-200">
-                    <p class="text-stone-500 text-lg">
-                        No papers have been added yet.
-                    </p>
-                    <p class="text-stone-400 mt-2">
-                        Papers processed through the admin panel will appear
-                        here.
-                    </p>
-                </div>
-            ) : (
-                <div class="grid grid-cols-1 gap-6">
-                    {dbPapers.map((paper) => (
-                        <div class="group relative bg-white border border-stone-200 rounded-2xl p-8 hover:shadow-lg transition-all hover:border-amber-200">
-                            <div class="flex justify-between items-start">
-                                <div class="flex-1">
-                                    <h2 class="text-2xl font-bold text-stone-900 mb-3 group-hover:text-amber-700 transition-colors">
-                                        <a href={`/papers/${paper.id}`}>
-                                            <span class="absolute inset-0" />
-                                            {paper.title}
-                                        </a>
-                                    </h2>
-                                    {paper.abstract && (
-                                        <p class="text-stone-600 mb-6 leading-relaxed line-clamp-3">
-                                            {paper.abstract}
-                                        </p>
-                                    )}
-                                    <div class="flex flex-wrap gap-4 text-sm font-medium text-stone-500">
-                                        {paper.authors && (
-                                            <div class="flex items-center gap-1">
-                                                <span class="font-bold text-stone-400">
-                                                    Authors:
-                                                </span>
-                                                <span>{paper.authors}</span>
-                                            </div>
-                                        )}
-                                        {paper.year && (
-                                            <div class="flex items-center gap-1">
-                                                <span class="font-bold text-stone-400">
-                                                    Year:
-                                                </span>
-                                                <span>{paper.year}</span>
-                                            </div>
-                                        )}
-                                        {paper.relevanceScore && (
-                                            <div class="flex items-center gap-1">
-                                                <span class="font-bold text-stone-400">
-                                                    Relevance:
-                                                </span>
-                                                <span class="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs font-bold">
-                                                    {Math.round(
-                                                        paper.relevanceScore *
-                                                            100,
-                                                    )}
-                                                    %
-                                                </span>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                                <div class="ml-4 text-stone-300 group-hover:translate-x-1 transition-transform">
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        class="h-6 w-6"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                        stroke="currentColor"
-                                    >
-                                        <path
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            stroke-width="2"
-                                            d="M14 5l7 7m0 0l-7 7m7-7H3"
-                                        />
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            )
-        }
+        <PaperFeed client:load papers={dbPapers} />
     </div>
 </BaseLayout>

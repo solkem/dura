@@ -54,8 +54,9 @@ try {
         console.log(`   - ${rel.paperId}: ${rel.relationship} (strength: ${rel.strength})`);
     }
 
-    console.log('\n📚 PREREQUISITES:', result.prerequisites.length);
-    for (const prereq of result.prerequisites) {
+    const prerequisites = result.learningPath?.prerequisites || [];
+    console.log('\n📚 PREREQUISITES:', prerequisites.length);
+    for (const prereq of prerequisites) {
         console.log(`   - ${prereq}`);
     }
 
