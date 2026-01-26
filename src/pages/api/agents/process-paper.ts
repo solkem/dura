@@ -97,7 +97,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
             summaryOneLiner: synthesizerResult.summaries.oneLiner,
             summaryParagraph: synthesizerResult.summaries.paragraph,
             summaryNyakupfuya: synthesizerResult.summaries.nyakupfuya,
-            prerequisites: JSON.stringify(synthesizerResult.prerequisites),
+            prerequisites: JSON.stringify(synthesizerResult.learningPath?.prerequisites || []),
+            synthesizerData: JSON.stringify(synthesizerResult),
             processedAt: new Date().toISOString(),
         };
 

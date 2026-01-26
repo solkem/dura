@@ -125,6 +125,10 @@ export const POST: APIRoute = async (context) => {
             ecosystemTags: JSON.stringify(curatorResult.ecosystemTags),
             curatorNotes: curatorResult.curatorNotes,
             synthesizerData: JSON.stringify(synthesizerResult),
+            summaryOneLiner: synthesizerResult.summaries.oneLiner,
+            summaryParagraph: synthesizerResult.summaries.paragraph,
+            summaryNyakupfuya: synthesizerResult.summaries.nyakupfuya,
+            prerequisites: JSON.stringify(synthesizerResult.learningPath?.prerequisites || []),
             createdAt: new Date().toISOString(),
         });
         console.log(`Paper saved with ID: ${paperId}`);
