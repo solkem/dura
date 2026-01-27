@@ -17,16 +17,29 @@ const isDev = import.meta.env.DEV;
       </a>
     </div>
 
-    <h1 class="text-3xl font-bold text-stone-900 mb-8">Import Research</h1>
+    <h1 class="text-3xl font-bold text-stone-900 mb-8">
+      Import Research (Legacy)
+    </h1>
+
+    <!-- Deprecation Notice -->
+    <div class="rounded-lg p-4 mb-8 bg-amber-100 border border-amber-300">
+      <p class="text-sm text-amber-900">
+        ⚠️ <strong>This page is deprecated.</strong> Use the
+        <a href="/admin/papers" class="font-bold underline hover:text-amber-700"
+          >AI Paper Processor</a
+        >
+        instead to add papers with full AI-powered curation and synthesis.
+      </p>
+    </div>
 
     <div
       class={`rounded-lg p-4 mb-8 ${
         isDev
           ? "bg-green-50 border border-green-200"
-          : "bg-amber-50 border border-amber-200"
+          : "bg-stone-100 border border-stone-200"
       }`}
     >
-      <p class={`text-sm ${isDev ? "text-green-800" : "text-amber-800"}`}>
+      <p class={`text-sm ${isDev ? "text-green-800" : "text-stone-700"}`}>
         {
           isDev ? (
             <>
@@ -39,8 +52,12 @@ const isDev = import.meta.env.DEV;
             </>
           ) : (
             <>
-              🚀 <strong>Production Mode</strong>: Files will be committed to
-              GitHub via API. Auto-deploy will run in ~2 minutes.
+              📁 <strong>Legacy Mode</strong>: This imports BibTeX as static MDX
+              files to GitHub. For database-backed papers with AI synthesis, use{" "}
+              <a href="/admin/papers" class="font-bold underline">
+                AI Paper Processor
+              </a>
+              .
             </>
           )
         }
