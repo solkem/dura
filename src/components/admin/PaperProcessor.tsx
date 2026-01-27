@@ -51,22 +51,64 @@ interface ProcessResult {
   error?: string;
 }
 
-type InputMode = 'manual' | 'pdf';
+type InputMode = 'manual' | 'pdf' | 'bibtex';
+
+// Simple BibTeX parser
+function parseBibtex(bibtex: string): { title: string; abstract: string; authors: string; year: string } | null {
+  try {
+    const titleMatch = bibtex.match(/title\s*=\s*[{"](.*?)[}"],?/is);
+    const abstractMatch = bibtex.match(/abstract\s*=\s*[{"](.*?)[}"],?/is);
+    const authorMatch = bibtex.match(/author\s*=\s*[{"](.*?)[}"],?/is);
+    const yearMatch = bibtex.match(/year\s*=\s*[{"](\d{4})[}"],?/is);
+
+    if (!titleMatch) return null;
+
+    return {
+      title: titleMatch[1].replace(/[{}]/g, '').trim(),
+      abstract: abstractMatch ? abstractMatch[1].replace(/[{}]/g, '').trim() : '',
+      authors: authorMatch ? authorMatch[1].replace(/[{}]/g, '').trim() : '',
+      year: yearMatch ? yearMatch[1] : ''
+    };
+  } catch {
+    return null;
+  }
+}
 
 export function PaperProcessor() {
   const [mode, setMode] = useState<InputMode>('pdf');
   const [title, setTitle] = useState('');
   const [abstract, setAbstract] = useState('');
   const [pdfFile, setPdfFile] = useState<File | null>(null);
+  const [bibtexFile, setBibtexFile] = useState<File | null>(null);
+  const [bibtexContent, setBibtexContent] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<ProcessResult | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const bibtexInputRef = useRef<HTMLInputElement>(null);
 
   const handlePdfSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file && file.type === 'application/pdf') {
       setPdfFile(file);
       setResult(null);
+    }
+  };
+
+  const handleBibtexSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && (file.name.endsWith('.bib') || file.type === 'application/x-bibtex' || file.type === 'text/plain')) {
+      setBibtexFile(file);
+      setResult(null);
+      // Read file content
+      const text = await file.text();
+      setBibtexContent(text);
+
+      // Parse and extract info
+      const parsed = parseBibtex(text);
+      if (parsed) {
+        setTitle(parsed.title);
+        setAbstract(parsed.abstract);
+      }
     }
   };
 
@@ -106,6 +148,46 @@ export function PaperProcessor() {
         }
 
         // Handle responses without status field
+        if (!data.status) {
+          setResult({
+            status: 'error',
+            error: data.error || 'Invalid response from server'
+          });
+          return;
+        }
+
+        setResult(data);
+      } else if (mode === 'bibtex' && bibtexFile) {
+        // BibTeX mode - use extracted title/abstract
+        if (!title.trim()) {
+          setResult({
+            status: 'error',
+            error: 'Could not extract title from BibTeX file'
+          });
+          return;
+        }
+
+        setStatus('Processing BibTeX with AI agents...');
+        const response = await fetch('/api/agents/process-paper', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title,
+            abstract,
+            bibtex: bibtexContent
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          setResult({
+            status: 'error',
+            error: data.error || data.details || `HTTP ${response.status}`
+          });
+          return;
+        }
+
         if (!data.status) {
           setResult({
             status: 'error',
@@ -163,21 +245,30 @@ export function PaperProcessor() {
     setTitle('');
     setAbstract('');
     setPdfFile(null);
+    setBibtexFile(null);
+    setBibtexContent('');
     setResult(null);
     setStatus('');
-    // Reset file input
+    // Reset file inputs
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
+    if (bibtexInputRef.current) {
+      bibtexInputRef.current.value = '';
+    }
   };
 
-  const canProcess = mode === 'pdf' ? !!pdfFile : !!title.trim();
+  const canProcess = mode === 'pdf'
+    ? !!pdfFile
+    : mode === 'bibtex'
+      ? !!bibtexFile && !!title.trim()
+      : !!title.trim();
 
   return (
     <div className="paper-processor">
       <h2>🤖 AI Paper Processor</h2>
       <p className="description">
-        Upload a PDF or enter paper details to curate and synthesize using AI agents.
+        Upload a PDF, BibTeX file, or enter paper details to curate and synthesize using AI agents.
       </p>
 
       {/* Mode Toggle */}
@@ -190,6 +281,13 @@ export function PaperProcessor() {
             onClick={() => setMode('pdf')}
           >
             📄 Upload PDF
+          </button>
+          <button
+            type="button"
+            className={`mode-btn ${mode === 'bibtex' ? 'active' : ''}`}
+            onClick={() => setMode('bibtex')}
+          >
+            📚 Upload BibTeX
           </button>
           <button
             type="button"
@@ -245,6 +343,64 @@ export function PaperProcessor() {
                 placeholder="Leave empty to auto-detect from PDF"
               />
             </div>
+          </>
+        ) : mode === 'bibtex' ? (
+          <>
+            <div className="field">
+              <label>BibTeX File *</label>
+              <div
+                className="pdf-dropzone"
+                onClick={() => bibtexInputRef.current?.click()}
+              >
+                <input
+                  ref={bibtexInputRef}
+                  type="file"
+                  accept=".bib,application/x-bibtex,text/plain"
+                  onChange={handleBibtexSelect}
+                  style={{ display: 'none' }}
+                />
+                {bibtexFile ? (
+                  <div className="pdf-selected">
+                    <span className="pdf-icon">📚</span>
+                    <div>
+                      <strong>{bibtexFile.name}</strong>
+                      <span className="pdf-size">
+                        ({(bibtexFile.size / 1024).toFixed(1)} KB)
+                      </span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="pdf-placeholder">
+                    <span className="upload-icon">⬆️</span>
+                    <span>Click to upload .bib file</span>
+                  </div>
+                )}
+              </div>
+            </div>
+            {bibtexFile && (
+              <>
+                <div className="field">
+                  <label htmlFor="title">Extracted Title *</label>
+                  <input
+                    id="title"
+                    type="text"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder="Title will auto-fill from BibTeX"
+                  />
+                </div>
+                <div className="field">
+                  <label htmlFor="abstract">Extracted Abstract</label>
+                  <textarea
+                    id="abstract"
+                    value={abstract}
+                    onChange={(e) => setAbstract(e.target.value)}
+                    placeholder="Abstract will auto-fill from BibTeX (if available)"
+                    rows={5}
+                  />
+                </div>
+              </>
+            )}
           </>
         ) : (
           <>
