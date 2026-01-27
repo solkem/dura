@@ -16,7 +16,7 @@ export const prerender = false;
  */
 export const POST: APIRoute = async ({ request, locals }) => {
     // Check authentication
-    if (!locals.session?.userId) {
+    if (!locals.user) {
         return new Response(JSON.stringify({ error: 'Unauthorized' }), {
             status: 401,
             headers: { 'Content-Type': 'application/json' }

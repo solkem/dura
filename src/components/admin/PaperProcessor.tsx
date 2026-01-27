@@ -95,6 +95,25 @@ export function PaperProcessor() {
 
         setStatus('Processing with AI agents...');
         const data = await response.json();
+
+        // Handle API errors (e.g., 401 Unauthorized)
+        if (!response.ok) {
+          setResult({
+            status: 'error',
+            error: data.error || data.details || `HTTP ${response.status}`
+          });
+          return;
+        }
+
+        // Handle responses without status field
+        if (!data.status) {
+          setResult({
+            status: 'error',
+            error: data.error || 'Invalid response from server'
+          });
+          return;
+        }
+
         setResult(data);
       } else {
         // Manual mode (title + abstract)
@@ -108,6 +127,25 @@ export function PaperProcessor() {
         });
 
         const data = await response.json();
+
+        // Handle API errors
+        if (!response.ok) {
+          setResult({
+            status: 'error',
+            error: data.error || data.details || `HTTP ${response.status}`
+          });
+          return;
+        }
+
+        // Handle responses without status field
+        if (!data.status) {
+          setResult({
+            status: 'error',
+            error: data.error || 'Invalid response from server'
+          });
+          return;
+        }
+
         setResult(data);
       }
     } catch (error) {
